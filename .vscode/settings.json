@@ -1,7 +1,9 @@
 {
   "cSpell.words": [
     "datasource",
+    "postgresql",
     "techblitz",
-    "Techblitz"
+    "Techblitz",
+    "uuid"
   ]
 }
