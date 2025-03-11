@@ -21,7 +21,8 @@
     "strictPropertyInitialization": false,
     "paths": {
       "@/*": ["src/*"],
-      "@test/*": ["test/*"]
+      "@test/*": ["test/*"],
+      "@common/*": ["src/common/*"],
     },
     "typeRoots": ["node_modules/@types", "src/@types"]
   }
