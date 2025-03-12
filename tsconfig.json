@@ -23,6 +23,7 @@
       "@/*": ["src/*"],
       "@test/*": ["test/*"],
       "@common/*": ["src/common/*"],
+      "@user/*": ["src/user/*"],
     },
     "typeRoots": ["node_modules/@types", "src/@types"]
   }
