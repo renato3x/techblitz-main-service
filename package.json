@@ -63,6 +63,7 @@
       "json",
       "ts"
     ],
+    "passWithNoTests": true,
     "rootDir": "./",
     "testEnvironment": "node",
     "testRegex": ".*\\.spec\\.ts$",
