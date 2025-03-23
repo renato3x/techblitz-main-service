@@ -6,10 +6,10 @@ import { RegisterUserDto } from './dto/register-user.dto';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @HttpCode(HttpStatus.CREATED)
   @Post('register')
-  async register(@Body() body: RegisterUserDto): Promise<void> {
-    await this.authService.register(body);
-    return;
+  @HttpCode(HttpStatus.CREATED)
+  async register(@Body() body: RegisterUserDto) {
+    const response = await this.authService.register(body);
+    return response;
   }
 }

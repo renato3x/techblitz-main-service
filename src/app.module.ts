@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { APP_FILTER, APP_PIPE } from '@nestjs/core';
+import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -10,9 +10,8 @@ import { ZodValidationPipe } from 'nestjs-zod';
 import { AuthModule } from '@/auth/auth.module';
 
 import { CommonModule } from '@/common/common.module';
-import { ZodValidationExceptionFilter } from '@/common/filters/zod-validation-exception.filter';
-import { HttpExceptionFilter } from '@/common/filters/http-exception.filter';
-import { GeneralExceptionFilter } from '@/common/filters/general-exception.filter';
+import { ResponseInterceptor } from '@/common/interceptors/response.interceptor';
+import { ExceptionHandlerFilter } from '@/common/filters/exception-handler.filter';
 
 @Module({
   imports: [ConfigModule.forRoot({ isGlobal: true }), CommonModule, AuthModule],
@@ -25,15 +24,11 @@ import { GeneralExceptionFilter } from '@/common/filters/general-exception.filte
     },
     {
       provide: APP_FILTER,
-      useClass: ZodValidationExceptionFilter,
+      useClass: ExceptionHandlerFilter,
     },
     {
-      provide: APP_FILTER,
-      useClass: HttpExceptionFilter,
-    },
-    {
-      provide: APP_FILTER,
-      useClass: GeneralExceptionFilter,
+      provide: APP_INTERCEPTOR,
+      useClass: ResponseInterceptor,
     },
   ],
 })

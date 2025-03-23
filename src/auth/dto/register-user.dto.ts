@@ -3,42 +3,42 @@ import { createZodDto } from 'nestjs-zod';
 
 export const RegisterUserSchema = z.object({
   name: z
-    .string({ message: 'name is required' })
+    .string({ message: 'Name is required' })
     .trim()
-    .nonempty('name cannot be empty')
-    .regex(/^[A-Za-zÀ-ÿ\s'-]+$/, { message: 'name cannot contain special characters' }),
+    .nonempty('Name cannot be empty')
+    .regex(/^[A-Za-zÀ-ÿ\s'-]+$/, { message: 'Name cannot contain special characters' }),
   password: z
-    .string({ message: 'password is required' })
+    .string({ message: 'Password is required' })
     .trim()
-    .nonempty('password cannot be empty')
-    .min(8, { message: 'password must have at least 8 characters' }),
+    .nonempty('Password cannot be empty')
+    .min(8, { message: 'Password must have at least 8 characters' }),
   username: z
-    .string({ message: 'username is required' })
+    .string({ message: 'Username is required' })
     .trim()
-    .nonempty('username cannot be empty')
+    .nonempty('Username cannot be empty')
     .refine((val) => !/^\d+$/.test(val), {
-      message: 'username cannot consist of only numbers',
+      message: 'Username cannot consist of only numbers',
     })
     .refine((val) => /^[a-zA-Z0-9._]+$/.test(val), {
-      message: 'username can only contain letters, numbers, dots, and underscores',
+      message: 'Username can only contain letters, numbers, dots, and underscores',
     })
     .refine((val) => !/\.\./.test(val), {
-      message: 'username cannot contain consecutive dots',
+      message: 'Username cannot contain consecutive dots',
     })
     .refine((val) => !/^[.]+$/.test(val), {
-      message: 'username cannot consist of only dots',
+      message: 'Username cannot consist of only dots',
     })
     .refine((val) => !/^_+$/.test(val), {
-      message: 'username cannot consist of only underscores',
+      message: 'Username cannot consist of only underscores',
     }),
   bio: z
     .string()
     .trim()
-    .nonempty('bio cannot be empty')
-    .max(100, { message: 'bio must have a maximum of 100 characters' })
+    .nonempty('Bio cannot be empty')
+    .max(100, { message: 'Bio must have a maximum of 100 characters' })
     .optional(),
-  email: z.string({ message: 'email is required' }).email({ message: 'email is invalid' }),
-  avatarUrl: z.string().url('avatarUrl must be an url').optional(),
+  email: z.string({ message: 'Email is required' }).email({ message: 'Email is invalid' }),
+  avatarUrl: z.string().url('Avatar URL must be an url').optional(),
 });
 
 export class RegisterUserDto extends createZodDto(RegisterUserSchema) {}
