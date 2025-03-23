@@ -9,7 +9,7 @@ export class AuthController {
   @HttpCode(HttpStatus.CREATED)
   @Post('register')
   async register(@Body() body: RegisterUserDto): Promise<void> {
-    this.authService.register(body);
+    await this.authService.register(body);
     return;
   }
 }
