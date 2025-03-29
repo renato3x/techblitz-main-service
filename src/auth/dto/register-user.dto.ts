@@ -6,7 +6,8 @@ export const RegisterUserSchema = z.object({
     .string({ message: 'Name is required' })
     .trim()
     .nonempty('Name cannot be empty')
-    .regex(/^[A-Za-zÀ-ÿ\s'-]+$/, { message: 'Name cannot contain special characters' }),
+    .max(50, 'Name is too long')
+    .regex(/^[^0-9]*$/, { message: 'Name cannot contain numbers' }),
   password: z
     .string({ message: 'Password is required' })
     .trim()
@@ -38,7 +39,6 @@ export const RegisterUserSchema = z.object({
     .max(100, { message: 'Bio must have a maximum of 100 characters' })
     .optional(),
   email: z.string({ message: 'Email is required' }).email({ message: 'Email is invalid' }),
-  avatarUrl: z.string().url('Avatar URL must be an url').optional(),
 });
 
 export class RegisterUserDto extends createZodDto(RegisterUserSchema) {}

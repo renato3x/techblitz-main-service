@@ -29,7 +29,7 @@ export class AuthService {
       },
     });
 
-    const token = this.jwtTokenService.create(user);
+    const token = this.jwtTokenService.create(user, '48h');
 
     return { token, user };
   }

@@ -2,10 +2,10 @@ import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { PostgreSqlContainer } from '@testcontainers/postgresql';
 import { App } from 'supertest/types';
-import request from 'supertest';
 import { faker } from '@faker-js/faker';
 import { execSync } from 'child_process';
 import { AppModule } from '@/app.module';
+import request from 'supertest';
 
 describe('Authentication routes', () => {
   let app: INestApplication<App>;
@@ -39,8 +39,9 @@ describe('Authentication routes', () => {
     await app.init();
   });
 
-  it('POST /auth/register (without avatarUrl)', async () => {
+  it('POST /auth/register', async () => {
     const response = await request(app.getHttpServer()).post('/auth/register').send(user);
+    console.log(response.body);
 
     expect(response.status).toBe(201);
     expect(response.body).toBeDefined();
