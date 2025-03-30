@@ -56,7 +56,7 @@ describe('Authentication endpoints', () => {
     });
 
     it('should block the registration of a new user if email already exists', async () => {
-      const userWithSameEMail = {
+      const body = {
         name: faker.person.fullName(),
         username: faker.internet.username().toLowerCase(),
         email: user.email,
@@ -64,7 +64,7 @@ describe('Authentication endpoints', () => {
         bio: faker.lorem.text().slice(0, 100),
       };
 
-      const response = await request(app.getHttpServer()).post('/auth/register').send(userWithSameEMail);
+      const response = await request(app.getHttpServer()).post('/auth/register').send(body);
 
       expect(response.status).toBe(400);
       expect(response.body).toBeDefined();
@@ -76,7 +76,7 @@ describe('Authentication endpoints', () => {
     });
 
     it('should block the registration of a new user if username already exists', async () => {
-      const userWithSameUsername = {
+      const body = {
         name: faker.person.fullName(),
         username: user.username,
         email: faker.internet.email().toLowerCase(),
@@ -84,7 +84,7 @@ describe('Authentication endpoints', () => {
         bio: faker.lorem.text().slice(0, 100),
       };
 
-      const response = await request(app.getHttpServer()).post('/auth/register').send(userWithSameUsername);
+      const response = await request(app.getHttpServer()).post('/auth/register').send(body);
 
       expect(response.status).toBe(400);
       expect(response.body).toBeDefined();
@@ -93,6 +93,40 @@ describe('Authentication endpoints', () => {
       expect(response.body.timestamp).toBeDefined();
       expect(response.body.statusCode).toBeDefined();
       expect(response.body.statusCode).toBe(400);
+    });
+  });
+
+  describe('POST /auth/login', () => {
+    it('should login user by username and password', async () => {
+      const body = {
+        username: user.username,
+        password: user.password,
+      };
+
+      const response = await request(app.getHttpServer()).post('/auth/login').send(body);
+
+      expect(response.status).toBe(200);
+      expect(response.body).toBeDefined();
+      expect(response.body.token).toBeDefined();
+      expect(response.body.timestamp).toBeDefined();
+      expect(response.body.statusCode).toBeDefined();
+      expect(response.body.statusCode).toBe(200);
+    });
+
+    it('should login user by email and password', async () => {
+      const body = {
+        email: user.email,
+        password: user.password,
+      };
+
+      const response = await request(app.getHttpServer()).post('/auth/login').send(body);
+
+      expect(response.status).toBe(200);
+      expect(response.body).toBeDefined();
+      expect(response.body.token).toBeDefined();
+      expect(response.body.timestamp).toBeDefined();
+      expect(response.body.statusCode).toBeDefined();
+      expect(response.body.statusCode).toBe(200);
     });
   });
 });

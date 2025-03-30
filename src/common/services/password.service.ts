@@ -7,4 +7,8 @@ export class PasswordService {
     const hash = bcrypt.hashSync(password, 10);
     return hash;
   }
+
+  compare(password: string, hash: string) {
+    return bcrypt.compareSync(password, hash);
+  }
 }

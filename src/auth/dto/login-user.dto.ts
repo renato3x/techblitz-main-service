@@ -1,18 +1,7 @@
-import { z } from 'zod';
 import { createZodDto } from 'nestjs-zod';
+import z from 'zod';
 
-export const RegisterUserSchema = z.object({
-  name: z
-    .string({ message: 'Name is required' })
-    .trim()
-    .nonempty('Name cannot be empty')
-    .max(50, 'Name is too long')
-    .regex(/^[^0-9]*$/, { message: 'Name cannot contain numbers' }),
-  password: z
-    .string({ message: 'Password is required' })
-    .trim()
-    .nonempty('Password cannot be empty')
-    .min(8, { message: 'Password must have at least 8 characters' }),
+const LoginUserSchema = z.object({
   username: z
     .string({ message: 'Username is required' })
     .trim()
@@ -31,8 +20,14 @@ export const RegisterUserSchema = z.object({
     })
     .refine((val) => !/^_+$/.test(val), {
       message: 'Username cannot consist of only underscores',
-    }),
-  email: z.string({ message: 'Email is required' }).email({ message: 'Email is invalid' }),
+    })
+    .optional(),
+  email: z.string({ message: 'Email is required' }).email({ message: 'Email is invalid' }).optional(),
+  password: z
+    .string({ message: 'Password is required' })
+    .trim()
+    .nonempty('Password cannot be empty')
+    .min(8, { message: 'Password must have at least 8 characters' }),
 });
 
-export class RegisterUserDto extends createZodDto(RegisterUserSchema) {}
+export class LoginUserDto extends createZodDto(LoginUserSchema) {}

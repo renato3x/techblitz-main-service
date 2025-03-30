@@ -1,8 +1,9 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { PrismaService } from '@/common/services/prisma.service';
 import { PasswordService } from '@/common/services/password.service';
 import { JwtTokenService } from '@/common/services/jwt-token.service';
+import { LoginUserDto } from './dto/login-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -29,10 +30,47 @@ export class AuthService {
       },
     });
 
-    const payload = { sub: user.id };
+    const payload = { sub: user.id, ...user };
     const token = this.jwtTokenService.create(payload, '48h');
 
     return { token, user };
+  }
+
+  async login(loginUserDto: LoginUserDto) {
+    const user = await this.prisma.user.findFirst({
+      where: {
+        ...(loginUserDto.username ? { username: loginUserDto.username } : {}),
+        ...(loginUserDto.email ? { email: loginUserDto.email } : {}),
+      },
+      omit: {
+        createdAt: true,
+        updatedAt: true,
+        avatarUrl: true,
+        bio: true,
+        name: true,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const isValidPassword = this.passwordService.compare(loginUserDto.password, user.password);
+
+    if (!isValidPassword) {
+      throw new UnauthorizedException('Password is invalid');
+    }
+
+    const payload = {
+      sub: user.id,
+      id: user.id,
+      email: user.email,
+      username: user.username,
+    };
+
+    const token = this.jwtTokenService.create(payload, '48h');
+
+    return { token };
   }
 
   private async throwErrorIfUserWithSameUsernameAlreadyExists(username: string) {
