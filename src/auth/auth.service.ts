@@ -29,7 +29,8 @@ export class AuthService {
       },
     });
 
-    const token = this.jwtTokenService.create(user, '48h');
+    const payload = { sub: user.id };
+    const token = this.jwtTokenService.create(payload, '48h');
 
     return { token, user };
   }
