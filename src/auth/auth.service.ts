@@ -4,6 +4,7 @@ import { PrismaService } from '@/common/services/prisma.service';
 import { PasswordService } from '@/common/services/password.service';
 import { JwtTokenService } from '@/common/services/jwt-token.service';
 import { LoginUserDto } from './dto/login-user.dto';
+import { JwtTokenType } from '@/common/enums/jwt-token-type.enum';
 
 @Injectable()
 export class AuthService {
@@ -30,8 +31,13 @@ export class AuthService {
       },
     });
 
-    const payload = { sub: user.id, ...user };
-    const token = this.jwtTokenService.create(payload, '48h');
+    const payload = {
+      sub: user.id,
+      email: user.email,
+      username: user.username,
+    };
+
+    const token = this.jwtTokenService.create(payload, JwtTokenType.APP);
 
     return { token, user };
   }
@@ -63,12 +69,11 @@ export class AuthService {
 
     const payload = {
       sub: user.id,
-      id: user.id,
       email: user.email,
       username: user.username,
     };
 
-    const token = this.jwtTokenService.create(payload, '48h');
+    const token = this.jwtTokenService.create(payload, JwtTokenType.APP);
 
     return { token };
   }

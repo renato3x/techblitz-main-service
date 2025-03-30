@@ -12,9 +12,18 @@ import { AuthModule } from '@/auth/auth.module';
 import { CommonModule } from '@/common/common.module';
 import { ResponseInterceptor } from '@/common/interceptors/response.interceptor';
 import { ExceptionHandlerFilter } from '@/common/filters/exception-handler.filter';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true }), CommonModule, AuthModule],
+  imports: [
+    JwtModule.register({
+      global: true,
+      secret: process.env.JWT_SECRET,
+    }),
+    ConfigModule.forRoot({ isGlobal: true }),
+    CommonModule,
+    AuthModule,
+  ],
   controllers: [AppController],
   providers: [
     AppService,
