@@ -39,7 +39,7 @@ describe('Authentication routes', () => {
     await app.init();
   });
 
-  it('POST /auth/register', async () => {
+  it('should register a new user and returns an authentication token and id, email and username', async () => {
     const response = await request(app.getHttpServer()).post('/auth/register').send(user);
 
     expect(response.status).toBe(201);
@@ -52,5 +52,45 @@ describe('Authentication routes', () => {
     expect(response.body.timestamp).toBeDefined();
     expect(response.body.statusCode).toBeDefined();
     expect(response.body.statusCode).toBe(201);
+  });
+
+  it('should block the registration of a new user if email already exists', async () => {
+    const userWithSameEMail = {
+      name: faker.person.fullName(),
+      username: faker.internet.username().toLowerCase(),
+      email: user.email,
+      password: faker.internet.password({ length: 8 }),
+      bio: faker.lorem.text().slice(0, 100),
+    };
+
+    const response = await request(app.getHttpServer()).post('/auth/register').send(userWithSameEMail);
+
+    expect(response.status).toBe(400);
+    expect(response.body).toBeDefined();
+    expect(response.body.message).toBeDefined();
+    expect(/^Email .+@.+\..+ already exists/gim.test(response.body.message)).toBe(true);
+    expect(response.body.timestamp).toBeDefined();
+    expect(response.body.statusCode).toBeDefined();
+    expect(response.body.statusCode).toBe(400);
+  });
+
+  it('should block the registration of a new user if username already exists', async () => {
+    const userWithSameUsername = {
+      name: faker.person.fullName(),
+      username: user.username,
+      email: faker.internet.email().toLowerCase(),
+      password: faker.internet.password({ length: 8 }),
+      bio: faker.lorem.text().slice(0, 100),
+    };
+
+    const response = await request(app.getHttpServer()).post('/auth/register').send(userWithSameUsername);
+
+    expect(response.status).toBe(400);
+    expect(response.body).toBeDefined();
+    expect(response.body.message).toBeDefined();
+    expect(/^Username .+ already exists/gim.test(response.body.message)).toBe(true);
+    expect(response.body.timestamp).toBeDefined();
+    expect(response.body.statusCode).toBeDefined();
+    expect(response.body.statusCode).toBe(400);
   });
 });

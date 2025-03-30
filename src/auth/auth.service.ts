@@ -55,7 +55,7 @@ export class AuthService {
     });
 
     if (userWithSameUsername) {
-      throw new BadRequestException(`Email ${email} already registered`);
+      throw new BadRequestException(`Email ${email} already exists`);
     }
   }
 }
