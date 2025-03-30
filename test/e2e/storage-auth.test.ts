@@ -14,6 +14,12 @@ import { execSync } from 'child_process';
 describe('Authentication endpoints', () => {
   let app: INestApplication<App>;
   let token: string = '';
+  let jwtTokenService: JwtTokenService;
+  const tokenPayload = {
+    sub: faker.number.int({ min: 1, max: 100 }),
+    email: faker.internet.email().toLowerCase(),
+    username: faker.internet.username().toLowerCase(),
+  };
 
   beforeAll(async () => {
     const container = await new PostgreSqlContainer().start();
@@ -52,23 +58,35 @@ describe('Authentication endpoints', () => {
       providers: [JwtTokenService],
     }).compile();
 
-    const payload = {
-      sub: faker.number.int({ min: 1, max: 100 }),
-      email: faker.internet.email().toLowerCase(),
-      username: faker.internet.username(),
-    };
-
-    token = module.get(JwtTokenService).create(payload, JwtTokenType.APP);
+    jwtTokenService = module.get(JwtTokenService);
+    token = jwtTokenService.create(tokenPayload, JwtTokenType.APP);
   });
 
   describe('POST /storage/', () => {
-    it("should block request if jwt token isn't sent", async () => {
+    it("should block request if jwt token isn't sent in authorization header", async () => {
       const body = {
         type: 'avatars',
         context: 'upload',
       };
 
       const response = await request(app.getHttpServer()).post('/storage').send(body);
+
+      expect(response.status).toBe(401);
+      expect(response.body).toBeDefined();
+      expect(response.body.message).toBeDefined();
+      expect(response.body.message).toBe('Access token is missing');
+      expect(response.body.timestamp).toBeDefined();
+      expect(response.body.statusCode).toBeDefined();
+      expect(response.body.statusCode).toBe(401);
+    });
+
+    it("should block request if jwt token isn't starts with 'Bearer '", async () => {
+      const body = {
+        type: 'avatars',
+        context: 'upload',
+      };
+
+      const response = await request(app.getHttpServer()).post('/storage').set('Authorization', token).send(body);
 
       expect(response.status).toBe(401);
       expect(response.body).toBeDefined();
@@ -93,7 +111,29 @@ describe('Authentication endpoints', () => {
       expect(response.status).toBe(401);
       expect(response.body).toBeDefined();
       expect(response.body.message).toBeDefined();
-      expect(response.body.message).toBe('Access token is missing');
+      expect(response.body.message).toBe('Access token is invalid');
+      expect(response.body.timestamp).toBeDefined();
+      expect(response.body.statusCode).toBeDefined();
+      expect(response.body.statusCode).toBe(401);
+    });
+
+    it('should block request if jwt token is expired', async () => {
+      const body = {
+        type: 'avatars',
+        context: 'upload',
+      };
+
+      const expiredToken = jwtTokenService.create(tokenPayload, JwtTokenType.EXPIRED);
+
+      const response = await request(app.getHttpServer())
+        .post('/storage')
+        .set('Authorization', `Bearer ${expiredToken}`)
+        .send(body);
+
+      expect(response.status).toBe(401);
+      expect(response.body).toBeDefined();
+      expect(response.body.message).toBeDefined();
+      expect(response.body.message).toBe('Access token is invalid');
       expect(response.body.timestamp).toBeDefined();
       expect(response.body.statusCode).toBeDefined();
       expect(response.body.statusCode).toBe(401);
