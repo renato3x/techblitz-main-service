@@ -62,6 +62,43 @@ describe('Authentication endpoints', () => {
   });
 
   describe('POST /storage/', () => {
+    it("should block request if jwt token isn't sent", async () => {
+      const body = {
+        type: 'avatars',
+        context: 'upload',
+      };
+
+      const response = await request(app.getHttpServer()).post('/storage').send(body);
+
+      expect(response.status).toBe(401);
+      expect(response.body).toBeDefined();
+      expect(response.body.message).toBeDefined();
+      expect(response.body.message).toBe('Access token is missing');
+      expect(response.body.timestamp).toBeDefined();
+      expect(response.body.statusCode).toBeDefined();
+      expect(response.body.statusCode).toBe(401);
+    });
+
+    it("should block request if jwt token isn't valid", async () => {
+      const body = {
+        type: 'avatars',
+        context: 'upload',
+      };
+
+      const response = await request(app.getHttpServer())
+        .set('Authorization', `Bearer ${faker.string.alphanumeric(10)}`)
+        .post('/storage')
+        .send(body);
+
+      expect(response.status).toBe(401);
+      expect(response.body).toBeDefined();
+      expect(response.body.message).toBeDefined();
+      expect(response.body.message).toBe('Access token is missing');
+      expect(response.body.timestamp).toBeDefined();
+      expect(response.body.statusCode).toBeDefined();
+      expect(response.body.statusCode).toBe(401);
+    });
+
     it('should return an avatar upload jwt token', async () => {
       const body = {
         type: 'avatars',
