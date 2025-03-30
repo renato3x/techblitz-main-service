@@ -17,6 +17,7 @@ jobs:
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
       DATABASE_URL: ""
       PORT: 3000
+      JWT_ISSUER: ${{ secrets.JWT_ISSUER }}
 
     steps:
       - name: Checkout repository
