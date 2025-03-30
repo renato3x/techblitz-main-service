@@ -12,6 +12,11 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    env:
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      DATABASE_URL: ""
+      PORT: 3000
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
