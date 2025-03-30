@@ -22,9 +22,6 @@ export class JwtTokenService {
   constructor(private readonly jwt: JwtService) {}
 
   create(payload: object, type: JwtTokenType) {
-    return this.jwt.sign(payload, {
-      issuer: process.env.JWT_ISSUER,
-      ...this.signOptions[type],
-    });
+    return this.jwt.sign(payload, { ...this.signOptions[type] });
   }
 }

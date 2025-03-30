@@ -19,6 +19,9 @@ import { JwtModule } from '@nestjs/jwt';
     JwtModule.register({
       global: true,
       secret: process.env.JWT_SECRET,
+      signOptions: {
+        issuer: process.env.JWT_ISSUER,
+      },
     }),
     ConfigModule.forRoot({ isGlobal: true }),
     CommonModule,
