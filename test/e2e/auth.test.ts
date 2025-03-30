@@ -41,7 +41,6 @@ describe('Authentication routes', () => {
 
   it('POST /auth/register', async () => {
     const response = await request(app.getHttpServer()).post('/auth/register').send(user);
-    console.log(response.body);
 
     expect(response.status).toBe(201);
     expect(response.body).toBeDefined();
