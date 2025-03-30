@@ -13,6 +13,7 @@ import { CommonModule } from '@/common/common.module';
 import { ResponseInterceptor } from '@/common/interceptors/response.interceptor';
 import { ExceptionHandlerFilter } from '@/common/filters/exception-handler.filter';
 import { JwtModule } from '@nestjs/jwt';
+import { StorageAuthModule } from './storage-auth/storage-auth.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { JwtModule } from '@nestjs/jwt';
     ConfigModule.forRoot({ isGlobal: true }),
     CommonModule,
     AuthModule,
+    StorageAuthModule,
   ],
   controllers: [AppController],
   providers: [

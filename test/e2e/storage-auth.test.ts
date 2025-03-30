@@ -86,8 +86,8 @@ describe('Authentication endpoints', () => {
       };
 
       const response = await request(app.getHttpServer())
-        .set('Authorization', `Bearer ${faker.string.alphanumeric(10)}`)
         .post('/storage')
+        .set('Authorization', `Bearer ${faker.string.alphanumeric(10)}`)
         .send(body);
 
       expect(response.status).toBe(401);
