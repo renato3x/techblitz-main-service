@@ -54,6 +54,7 @@ jobs:
             MESSAGE="✅ All E2E tests from Techblitz Project passed!"
           else
             MESSAGE="❌ Some tests from Techblitz Project failed!"
+          fi
           
           curl -X POST $DISCORD_WEBHOOK_URL \
             -H "Content-Type: application/json" \
