@@ -1,11 +1,10 @@
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { PostgreSqlContainer } from '@testcontainers/postgresql';
 import { App } from 'supertest/types';
 import { faker } from '@faker-js/faker';
-import { execSync } from 'child_process';
 import { AppModule } from '@/app.module';
 import request from 'supertest';
+import { createContainers } from '@test/helpers';
 
 describe('Authentication endpoints', () => {
   let app: INestApplication<App>;
@@ -18,16 +17,7 @@ describe('Authentication endpoints', () => {
   };
 
   beforeAll(async () => {
-    const container = await new PostgreSqlContainer().start();
-    const connectionUri = container.getConnectionUri();
-    process.env.DATABASE_URL = connectionUri;
-
-    execSync('pnpm db:push', {
-      env: {
-        ...process.env,
-        DATABASE_URL: connectionUri,
-      },
-    });
+    await createContainers();
   }, 30000);
 
   beforeEach(async () => {

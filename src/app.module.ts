@@ -17,6 +17,7 @@ import { StorageAuthModule } from './storage-auth/storage-auth.module';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
     JwtModule.register({
       global: true,
       secret: process.env.JWT_SECRET,
@@ -24,7 +25,6 @@ import { StorageAuthModule } from './storage-auth/storage-auth.module';
         issuer: process.env.JWT_ISSUER,
       },
     }),
-    ConfigModule.forRoot({ isGlobal: true }),
     CommonModule,
     AuthModule,
     StorageAuthModule,

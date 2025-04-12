@@ -5,6 +5,7 @@ import { PasswordService } from '@/common/services/password.service';
 import { JwtTokenService } from '@/common/services/jwt-token.service';
 import { LoginUserDto } from './dto/login-user.dto';
 import { JwtTokenType } from '@/common/enums/jwt-token-type.enum';
+import { MessageQueueProducerService } from '@/common/services/message-queue-producer.service';
 
 @Injectable()
 export class AuthService {
@@ -12,6 +13,7 @@ export class AuthService {
     private readonly prisma: PrismaService,
     private readonly passwordService: PasswordService,
     private readonly jwtTokenService: JwtTokenService,
+    private readonly messageQueueProducer: MessageQueueProducerService,
   ) {}
 
   async register(registerUserDto: RegisterUserDto) {
@@ -24,10 +26,10 @@ export class AuthService {
         ...registerUserDto,
         password: hash,
       },
-      select: {
-        id: true,
-        email: true,
-        username: true,
+      omit: {
+        avatarUrl: true,
+        bio: true,
+        password: true,
       },
     });
 
@@ -38,8 +40,17 @@ export class AuthService {
     };
 
     const token = this.jwtTokenService.create(payload, JwtTokenType.APP);
+    await this.messageQueueProducer.emit('user.registered', user);
 
-    return { token, user };
+    return {
+      user: {
+        id: user.id,
+        name: user.name,
+        username: user.username,
+        email: user.email,
+      },
+      token,
+    };
   }
 
   async login(loginUserDto: LoginUserDto) {

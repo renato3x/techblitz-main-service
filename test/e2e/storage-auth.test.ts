@@ -8,13 +8,13 @@ import { JwtTokenService } from '@/common/services/jwt-token.service';
 import { faker } from '@faker-js/faker';
 import request from 'supertest';
 import { JwtTokenType } from '@/common/enums/jwt-token-type.enum';
-import { PostgreSqlContainer } from '@testcontainers/postgresql';
-import { execSync } from 'child_process';
+import { createContainers } from '@test/helpers';
 
 describe('Authentication endpoints', () => {
   let app: INestApplication<App>;
   let token: string = '';
   let jwtTokenService: JwtTokenService;
+
   const tokenPayload = {
     sub: faker.number.int({ min: 1, max: 100 }),
     email: faker.internet.email().toLowerCase(),
@@ -22,16 +22,7 @@ describe('Authentication endpoints', () => {
   };
 
   beforeAll(async () => {
-    const container = await new PostgreSqlContainer().start();
-    const connectionUri = container.getConnectionUri();
-    process.env.DATABASE_URL = connectionUri;
-
-    execSync('pnpm db:push', {
-      env: {
-        ...process.env,
-        DATABASE_URL: connectionUri,
-      },
-    });
+    await createContainers();
   }, 30000);
 
   beforeEach(async () => {
