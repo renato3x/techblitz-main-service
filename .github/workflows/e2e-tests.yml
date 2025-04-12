@@ -50,9 +50,7 @@ jobs:
         env:
           JOB_STATUS: ${{ job.status }}
         run: |-
-          echo $JOB_STATUS
-
-          if [ "$JOB_STATUS" = "Success" ]; then
+          if [ "$JOB_STATUS" = "success" ]; then
             MESSAGE="✅ All E2E tests from Techblitz Project passed!"
           else
             MESSAGE="❌ Some tests from Techblitz Project failed!"
