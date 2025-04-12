@@ -18,6 +18,7 @@ jobs:
       DATABASE_URL: ""
       PORT: 3000
       JWT_ISSUER: ${{ secrets.JWT_ISSUER }}
+      DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
 
     steps:
       - name: Checkout repository
@@ -42,3 +43,19 @@ jobs:
 
       - name: Run tests
         run: pnpm test:e2e
+        continue-on-error: true
+      
+      - name: Send Discord Notification
+        if: always()
+        env:
+          JOB_STATUS: ${{ job.status }}
+        run: |-
+          if [ "$JOB_STATUS" = "Success" ]; then
+            MESSAGE="✅ All E2E tests from Techblitz Project passed!"
+          else
+            MESSAGE="❌ Some tests from Techblitz Project failed!"
+          
+          curl -X POST $DISCORD_WEBHOOK_URL \
+            -H "Content-Type: application/json" \
+            -d "{\"content\": \"$MESSAGE\", \"username\": \"Techblitz BOT 🤖\"}"
+
