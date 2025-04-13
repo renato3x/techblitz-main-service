@@ -10,7 +10,7 @@ export class MessageQueueProducerService implements OnApplicationBootstrap {
     this.client = ClientProxyFactory.create({
       transport: Transport.RMQ,
       options: {
-        urls: [process.env.RMQ_PORT],
+        urls: [process.env.RMQ_URL],
         queue: process.env.MESSAGE_BROKER_QUEUE_NAME,
         persistent: true,
         queueOptions: {
