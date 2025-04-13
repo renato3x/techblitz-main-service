@@ -14,6 +14,7 @@ import { ResponseInterceptor } from '@/common/interceptors/response.interceptor'
 import { ExceptionHandlerFilter } from '@/common/filters/exception-handler.filter';
 import { JwtModule } from '@nestjs/jwt';
 import { StorageAuthModule } from './storage-auth/storage-auth.module';
+import { JwtTokenModule } from './jwt-token/jwt-token.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { StorageAuthModule } from './storage-auth/storage-auth.module';
     CommonModule,
     AuthModule,
     StorageAuthModule,
+    JwtTokenModule,
   ],
   controllers: [AppController],
   providers: [

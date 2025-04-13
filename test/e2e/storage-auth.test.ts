@@ -4,11 +4,11 @@ import { App } from 'supertest/types';
 import { AppModule } from '@/app.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule } from '@nestjs/config';
-import { JwtTokenService } from '@/common/services/jwt-token.service';
 import { faker } from '@faker-js/faker';
 import request from 'supertest';
-import { JwtTokenType } from '@/common/enums/jwt-token-type.enum';
 import { createContainers } from '@test/helpers';
+import { JwtTokenService } from '@/jwt-token/services/jwt-token.service';
+import { JwtTokenType } from '@/jwt-token/enums/jwt-token-type.enum';
 
 describe('Authentication endpoints', () => {
   let app: INestApplication<App>;

@@ -2,10 +2,10 @@ import { BadRequestException, Injectable, NotFoundException, UnauthorizedExcepti
 import { RegisterUserDto } from './dto/register-user.dto';
 import { PrismaService } from '@/common/services/prisma.service';
 import { PasswordService } from '@/common/services/password.service';
-import { JwtTokenService } from '@/common/services/jwt-token.service';
 import { LoginUserDto } from './dto/login-user.dto';
-import { JwtTokenType } from '@/common/enums/jwt-token-type.enum';
 import { MessageQueueProducerService } from '@/common/services/message-queue-producer.service';
+import { JwtTokenService } from '@/jwt-token/services/jwt-token.service';
+import { JwtTokenType } from '@/jwt-token/enums/jwt-token-type.enum';
 
 @Injectable()
 export class AuthService {

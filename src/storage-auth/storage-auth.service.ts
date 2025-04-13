@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CreateStorageTokenDto } from './dto/create-storage-token.dto';
-import { JwtTokenService } from '@/common/services/jwt-token.service';
-import { JwtTokenType } from '@/common/enums/jwt-token-type.enum';
+import { JwtTokenService } from '@/jwt-token/services/jwt-token.service';
+import { JwtTokenType } from '@/jwt-token/enums/jwt-token-type.enum';
 
 @Injectable()
 export class StorageAuthService {

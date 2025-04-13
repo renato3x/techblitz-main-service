@@ -1,18 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { JwtService, JwtSignOptions } from '@nestjs/jwt';
+import { JwtService } from '@nestjs/jwt';
 import { JwtTokenType } from '../enums/jwt-token-type.enum';
-
-type SignOptions = {
-  [key in JwtTokenType]: JwtSignOptions;
-};
-
-type Claims = {
-  [key: string]: any;
-  iat: number;
-  exp: number;
-  aud: string;
-  iss: string;
-};
+import { Claims } from '../types/claims.type';
+import { SignOptions } from '../types/sign-options.type';
 
 @Injectable()
 export class JwtTokenService {
