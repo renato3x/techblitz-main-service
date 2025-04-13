@@ -30,6 +30,7 @@ export class AuthService {
         avatarUrl: true,
         bio: true,
         password: true,
+        updatedAt: true,
       },
     });
 
