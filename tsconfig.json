@@ -4,7 +4,6 @@
     "lib": ["ES2023"],
     "module": "Node16",
     "allowJs": true,
-    "rootDir": ".",
     "baseUrl": ".",
     "removeComments": true,
     "noEmitOnError": true,
