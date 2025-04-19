@@ -13,7 +13,7 @@ export class ResponseInterceptor implements NestInterceptor {
         const timestamp = new Date().toISOString();
 
         return {
-          ...data,
+          data,
           timestamp,
           statusCode: response.statusCode,
         };

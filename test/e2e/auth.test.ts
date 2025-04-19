@@ -33,12 +33,16 @@ describe('Authentication endpoints', () => {
       const response = await request(app.getHttpServer()).post('/auth/register').send(user);
 
       expect(response.status).toBe(201);
+
       expect(response.body).toBeDefined();
-      expect(response.body.token).toBeDefined();
-      expect(response.body.user).toBeDefined();
-      expect(response.body.user.id).toBeDefined();
-      expect(response.body.user.email).toBeDefined();
-      expect(response.body.user.username).toBeDefined();
+
+      expect(response.body.data).toBeDefined();
+      expect(response.body.data.token).toBeDefined();
+      expect(response.body.data.user).toBeDefined();
+      expect(response.body.data.user.id).toBeDefined();
+      expect(response.body.data.user.email).toBeDefined();
+      expect(response.body.data.user.username).toBeDefined();
+
       expect(response.body.timestamp).toBeDefined();
       expect(response.body.statusCode).toBeDefined();
       expect(response.body.statusCode).toBe(201);
@@ -50,7 +54,6 @@ describe('Authentication endpoints', () => {
         username: faker.internet.username().toLowerCase(),
         email: user.email,
         password: faker.internet.password({ length: 8 }),
-        bio: faker.lorem.text().slice(0, 100),
       };
 
       const response = await request(app.getHttpServer()).post('/auth/register').send(body);
@@ -70,7 +73,6 @@ describe('Authentication endpoints', () => {
         username: user.username,
         email: faker.internet.email().toLowerCase(),
         password: faker.internet.password({ length: 8 }),
-        bio: faker.lorem.text().slice(0, 100),
       };
 
       const response = await request(app.getHttpServer()).post('/auth/register').send(body);
@@ -96,7 +98,7 @@ describe('Authentication endpoints', () => {
 
       expect(response.status).toBe(200);
       expect(response.body).toBeDefined();
-      expect(response.body.token).toBeDefined();
+      expect(response.body.data.token).toBeDefined();
       expect(response.body.timestamp).toBeDefined();
       expect(response.body.statusCode).toBeDefined();
       expect(response.body.statusCode).toBe(200);
@@ -112,7 +114,7 @@ describe('Authentication endpoints', () => {
 
       expect(response.status).toBe(200);
       expect(response.body).toBeDefined();
-      expect(response.body.token).toBeDefined();
+      expect(response.body.data.token).toBeDefined();
       expect(response.body.timestamp).toBeDefined();
       expect(response.body.statusCode).toBeDefined();
       expect(response.body.statusCode).toBe(200);

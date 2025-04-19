@@ -143,7 +143,7 @@ describe('Authentication endpoints', () => {
 
       expect(response.status).toBe(200);
       expect(response.body).toBeDefined();
-      expect(response.body.token).toBeDefined();
+      expect(response.body.data.token).toBeDefined();
       expect(response.body.timestamp).toBeDefined();
       expect(response.body.statusCode).toBeDefined();
       expect(response.body.statusCode).toBe(200);
