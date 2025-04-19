@@ -3,7 +3,6 @@ import { RegisterUserDto } from './dto/register-user.dto';
 import { PrismaService } from '@/common/services/prisma.service';
 import { PasswordService } from '@/common/services/password.service';
 import { LoginUserDto } from './dto/login-user.dto';
-import { MessageQueueProducerService } from '@/common/services/message-queue-producer.service';
 import { JwtTokenService } from '@/jwt-token/services/jwt-token.service';
 import { JwtTokenType } from '@/jwt-token/enums/jwt-token-type.enum';
 
@@ -13,12 +12,12 @@ export class AuthService {
     private readonly prisma: PrismaService,
     private readonly passwordService: PasswordService,
     private readonly jwtTokenService: JwtTokenService,
-    private readonly messageQueueProducer: MessageQueueProducerService,
   ) {}
 
   async register(registerUserDto: RegisterUserDto) {
     await this.throwErrorIfUserWithSameEmailAlreadyExists(registerUserDto.email);
     await this.throwErrorIfUserWithSameUsernameAlreadyExists(registerUserDto.username);
+
     const hash = this.passwordService.hash(registerUserDto.password);
 
     const user = await this.prisma.user.create({
@@ -41,17 +40,8 @@ export class AuthService {
     };
 
     const token = this.jwtTokenService.create(payload, JwtTokenType.APP);
-    await this.messageQueueProducer.emit('user.registered', user);
 
-    return {
-      user: {
-        id: user.id,
-        name: user.name,
-        username: user.username,
-        email: user.email,
-      },
-      token,
-    };
+    return { user, token };
   }
 
   async login(loginUserDto: LoginUserDto) {
