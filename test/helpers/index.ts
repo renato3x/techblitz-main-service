@@ -18,7 +18,7 @@ export async function createDatabaseContainer() {
 export async function createMessageBrokerContainer() {
   const container = await new RabbitMQContainer('rabbitmq:management').start();
   const amqpUrl = container.getAmqpUrl();
-  process.env.RMQ_URL = amqpUrl;
+  process.env.BROKER_URL = amqpUrl;
 }
 
 export async function createContainers() {

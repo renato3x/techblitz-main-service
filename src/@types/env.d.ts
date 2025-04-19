@@ -4,7 +4,7 @@ declare namespace NodeJS {
     PORT: string;
     JWT_SECRET: string;
     JWT_ISSUER: string;
-    RMQ_URL: string;
-    MESSAGE_BROKER_QUEUE_NAME: string;
+    BROKER_URL: string;
+    QUEUE_NAME: string;
   }
 }

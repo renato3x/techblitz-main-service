@@ -13,7 +13,6 @@ describe('Authentication endpoints', () => {
     username: faker.internet.username().toLowerCase(),
     email: faker.internet.email().toLowerCase(),
     password: faker.internet.password({ length: 8 }),
-    bio: faker.lorem.text().slice(0, 100),
   };
 
   beforeAll(async () => {
