@@ -14,11 +14,15 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      JWT_SECRET: ${{ secrets.JWT_SECRET }}
       DATABASE_URL: ""
       PORT: 3000
-      JWT_ISSUER: ${{ secrets.JWT_ISSUER }}
+      JWT_SECRET: ${{ secrets.TESTS_JWT_SECRET }}
+      JWT_ISSUER: ${{ secrets.TESTS_JWT_ISSUER }}
+      BROKER_URL: ""
+      QUEUE_NAME: ${{ secrets.TESTS_QUEUE_NAME }}
       DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+      APP_LOGGER_PROVIDER: ${{ secrets.TESTS_APP_LOGGER_PROVIDER }}
+      NODE_ENV: development
 
     steps:
       - name: Checkout repository
