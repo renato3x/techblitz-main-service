@@ -26,10 +26,10 @@ export class AuthService {
         password: hash,
       },
       omit: {
-        avatarUrl: true,
+        avatar_url: true,
         bio: true,
         password: true,
-        updatedAt: true,
+        updated_at: true,
       },
     });
 
@@ -51,9 +51,9 @@ export class AuthService {
         ...(loginUserDto.email ? { email: loginUserDto.email } : {}),
       },
       omit: {
-        createdAt: true,
-        updatedAt: true,
-        avatarUrl: true,
+        created_at: true,
+        updated_at: true,
+        avatar_url: true,
         bio: true,
         name: true,
       },
