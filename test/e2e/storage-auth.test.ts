@@ -16,7 +16,7 @@ describe('Authentication endpoints', () => {
   let jwtTokenService: JwtTokenService;
 
   const tokenPayload = {
-    sub: faker.number.int({ min: 1, max: 100 }),
+    sub: faker.string.uuid(),
     email: faker.internet.email().toLowerCase(),
     username: faker.internet.username().toLowerCase(),
   };

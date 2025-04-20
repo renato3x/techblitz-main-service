@@ -9,10 +9,10 @@ import { createContainers } from '@test/helpers';
 describe('Authentication endpoints', () => {
   let app: INestApplication<App>;
   const user = {
-    name: faker.person.fullName(),
-    username: faker.internet.username().toLowerCase(),
-    email: faker.internet.email().toLowerCase(),
-    password: faker.internet.password({ length: 8 }),
+    name: 'John Doe',
+    username: 'john.doe',
+    email: 'john.doe@helloworld.com',
+    password: faker.internet.password({ length: 10 }),
   };
 
   beforeAll(async () => {
@@ -50,10 +50,10 @@ describe('Authentication endpoints', () => {
 
     it('should block the registration of a new user if email already exists', async () => {
       const body = {
-        name: faker.person.fullName(),
-        username: faker.internet.username().toLowerCase(),
+        name: 'Fake User',
+        username: 'fake.user00',
         email: user.email,
-        password: faker.internet.password({ length: 8 }),
+        password: faker.internet.password({ length: 10 }),
       };
 
       const response = await request(app.getHttpServer()).post('/auth/register').send(body);
@@ -69,10 +69,10 @@ describe('Authentication endpoints', () => {
 
     it('should block the registration of a new user if username already exists', async () => {
       const body = {
-        name: faker.person.fullName(),
+        name: 'Fake User',
         username: user.username,
-        email: faker.internet.email().toLowerCase(),
-        password: faker.internet.password({ length: 8 }),
+        email: 'fake.user@fake.com',
+        password: faker.internet.password({ length: 10 }),
       };
 
       const response = await request(app.getHttpServer()).post('/auth/register').send(body);
