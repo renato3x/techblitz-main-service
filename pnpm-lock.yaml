@@ -87,6 +87,9 @@ importers:
       '@testcontainers/rabbitmq':
         specifier: ^10.24.2
         version: 10.24.2
+      '@types/amqplib':
+        specifier: ^0.10.7
+        version: 0.10.7
       '@types/bcrypt':
         specifier: ^5.0.2
         version: 5.0.2
@@ -1276,6 +1279,9 @@ packages:
 
   '@tsconfig/node16@1.0.4':
     resolution: {integrity: sha512-vxhUy4J8lyeyinH7Azl1pdd43GJhZH/tP2weN8TntQblOY+A0XbT8DJk1/oCPuOOyg/Ja757rG0CgHcWC8OfMA==}
+
+  '@types/amqplib@0.10.7':
+    resolution: {integrity: sha512-IVj3avf9AQd2nXCx0PGk/OYq7VmHiyNxWFSb5HhU9ATh+i+gHWvVcljFTcTWQ/dyHJCTrzCixde+r/asL2ErDA==}
 
   '@types/babel__core@7.20.5':
     resolution: {integrity: sha512-qoQprZvz5wQFJwMDqeseRXWv3rqMvhgpbXFfVyWhbx9X47POIA6i/+dXefEmZKoAgOaTdaIgNSMqMIU61yRyzA==}
@@ -5344,6 +5350,10 @@ snapshots:
   '@tsconfig/node14@1.0.3': {}
 
   '@tsconfig/node16@1.0.4': {}
+
+  '@types/amqplib@0.10.7':
+    dependencies:
+      '@types/node': 22.13.10
 
   '@types/babel__core@7.20.5':
     dependencies:
