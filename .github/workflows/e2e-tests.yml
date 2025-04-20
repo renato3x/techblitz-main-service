@@ -46,13 +46,14 @@ jobs:
         run: pnpm db:generate
 
       - name: Run tests
+        id: run_tests
         run: pnpm test:e2e
         continue-on-error: true
       
       - name: Send Discord Notification
         if: always()
         env:
-          JOB_STATUS: ${{ job.status }}
+          JOB_STATUS: ${{ steps.run_tests.outcome }}
         run: |-
           if [ "$JOB_STATUS" = "success" ]; then
             MESSAGE="✅ All E2E tests from Techblitz Project passed!"
