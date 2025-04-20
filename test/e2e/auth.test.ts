@@ -44,8 +44,8 @@ describe('Authentication endpoints', () => {
       expect(response.body.data.user.username).toBeDefined();
 
       expect(response.body.timestamp).toBeDefined();
-      expect(response.body.statusCode).toBeDefined();
-      expect(response.body.statusCode).toBe(201);
+      expect(response.body.status_code).toBeDefined();
+      expect(response.body.status_code).toBe(201);
     });
 
     it('should block the registration of a new user if email already exists', async () => {
@@ -63,8 +63,8 @@ describe('Authentication endpoints', () => {
       expect(response.body.message).toBeDefined();
       expect(/^Email .+@.+\..+ already exists/gim.test(response.body.message)).toBe(true);
       expect(response.body.timestamp).toBeDefined();
-      expect(response.body.statusCode).toBeDefined();
-      expect(response.body.statusCode).toBe(400);
+      expect(response.body.status_code).toBeDefined();
+      expect(response.body.status_code).toBe(400);
     });
 
     it('should block the registration of a new user if username already exists', async () => {
@@ -82,8 +82,8 @@ describe('Authentication endpoints', () => {
       expect(response.body.message).toBeDefined();
       expect(/^Username .+ already exists/gim.test(response.body.message)).toBe(true);
       expect(response.body.timestamp).toBeDefined();
-      expect(response.body.statusCode).toBeDefined();
-      expect(response.body.statusCode).toBe(400);
+      expect(response.body.status_code).toBeDefined();
+      expect(response.body.status_code).toBe(400);
     });
   });
 
@@ -100,8 +100,8 @@ describe('Authentication endpoints', () => {
       expect(response.body).toBeDefined();
       expect(response.body.data.token).toBeDefined();
       expect(response.body.timestamp).toBeDefined();
-      expect(response.body.statusCode).toBeDefined();
-      expect(response.body.statusCode).toBe(200);
+      expect(response.body.status_code).toBeDefined();
+      expect(response.body.status_code).toBe(200);
     });
 
     it('should login user by email and password', async () => {
@@ -116,8 +116,8 @@ describe('Authentication endpoints', () => {
       expect(response.body).toBeDefined();
       expect(response.body.data.token).toBeDefined();
       expect(response.body.timestamp).toBeDefined();
-      expect(response.body.statusCode).toBeDefined();
-      expect(response.body.statusCode).toBe(200);
+      expect(response.body.status_code).toBeDefined();
+      expect(response.body.status_code).toBe(200);
     });
   });
 });

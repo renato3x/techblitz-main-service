@@ -15,7 +15,7 @@ export class ResponseInterceptor implements NestInterceptor {
         return {
           data,
           timestamp,
-          statusCode: response.statusCode,
+          status_code: response.statusCode,
         };
       }),
     );

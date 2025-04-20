@@ -15,7 +15,7 @@ export class ExceptionHandlerFilter<T extends Error> implements ExceptionFilter 
 
       response.status(statusCode).json({
         message: 'Validation error',
-        statusCode,
+        status_code: statusCode,
         errors,
         timestamp,
       });
@@ -29,7 +29,7 @@ export class ExceptionHandlerFilter<T extends Error> implements ExceptionFilter 
 
       response.status(statusCode).json({
         ...(typeof data === 'string' ? { message: data } : data),
-        statusCode,
+        status_code: statusCode,
         timestamp,
       });
 
@@ -39,7 +39,7 @@ export class ExceptionHandlerFilter<T extends Error> implements ExceptionFilter 
     const statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
     response.status(statusCode).json({
       message: 'Internal server error',
-      statusCode,
+      status_code: statusCode,
       timestamp,
     });
   }

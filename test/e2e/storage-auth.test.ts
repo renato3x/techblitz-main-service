@@ -67,8 +67,8 @@ describe('Authentication endpoints', () => {
       expect(response.body.message).toBeDefined();
       expect(response.body.message).toBe('Access token is missing');
       expect(response.body.timestamp).toBeDefined();
-      expect(response.body.statusCode).toBeDefined();
-      expect(response.body.statusCode).toBe(401);
+      expect(response.body.status_code).toBeDefined();
+      expect(response.body.status_code).toBe(401);
     });
 
     it("should block request if jwt token isn't starts with 'Bearer '", async () => {
@@ -84,8 +84,8 @@ describe('Authentication endpoints', () => {
       expect(response.body.message).toBeDefined();
       expect(response.body.message).toBe('Access token is missing');
       expect(response.body.timestamp).toBeDefined();
-      expect(response.body.statusCode).toBeDefined();
-      expect(response.body.statusCode).toBe(401);
+      expect(response.body.status_code).toBeDefined();
+      expect(response.body.status_code).toBe(401);
     });
 
     it("should block request if jwt token isn't valid", async () => {
@@ -104,8 +104,8 @@ describe('Authentication endpoints', () => {
       expect(response.body.message).toBeDefined();
       expect(response.body.message).toBe('Access token is invalid');
       expect(response.body.timestamp).toBeDefined();
-      expect(response.body.statusCode).toBeDefined();
-      expect(response.body.statusCode).toBe(401);
+      expect(response.body.status_code).toBeDefined();
+      expect(response.body.status_code).toBe(401);
     });
 
     it('should block request if jwt token is expired', async () => {
@@ -126,8 +126,8 @@ describe('Authentication endpoints', () => {
       expect(response.body.message).toBeDefined();
       expect(response.body.message).toBe('Access token is invalid');
       expect(response.body.timestamp).toBeDefined();
-      expect(response.body.statusCode).toBeDefined();
-      expect(response.body.statusCode).toBe(401);
+      expect(response.body.status_code).toBeDefined();
+      expect(response.body.status_code).toBe(401);
     });
 
     it('should return an avatar upload jwt token', async () => {
@@ -145,8 +145,8 @@ describe('Authentication endpoints', () => {
       expect(response.body).toBeDefined();
       expect(response.body.data.token).toBeDefined();
       expect(response.body.timestamp).toBeDefined();
-      expect(response.body.statusCode).toBeDefined();
-      expect(response.body.statusCode).toBe(200);
+      expect(response.body.status_code).toBeDefined();
+      expect(response.body.status_code).toBe(200);
     });
   });
 });
