@@ -15,7 +15,6 @@ export class PinoAppLoggerService implements AppLogger {
             level: 'debug',
             options: {
               colorize: true,
-              hideObject: true,
             } as PrettyOptions,
           },
           {
@@ -36,7 +35,6 @@ export class PinoAppLoggerService implements AppLogger {
             level: 'info',
             options: {
               colorize: true,
-              hideObject: true,
             } as PrettyOptions,
           },
           {
@@ -56,14 +54,14 @@ export class PinoAppLoggerService implements AppLogger {
   }
 
   info(message: string, meta: AppLogger.LogMetadata): void {
-    this.logger.info(meta, message);
+    this.logger.info(meta.meta, `[${meta.context}] ${message}`);
   }
 
   error(message: string, meta: AppLogger.LogMetadata): void {
-    this.logger.error(meta, message);
+    this.logger.error(meta.meta, `[${meta.context}] ${message}`);
   }
 
   warn(message: string, meta: AppLogger.LogMetadata): void {
-    this.logger.warn(meta, message);
+    this.logger.warn(meta.meta, `[${meta.context}] ${message}`);
   }
 }

@@ -16,6 +16,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { StorageAuthModule } from './storage-auth/storage-auth.module';
 import { JwtTokenModule } from './jwt-token/jwt-token.module';
 import { AppLoggerModule } from './app-logger/app-logger.module';
+import { EventEmitterModule } from './event-emitter/event-emitter.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { AppLoggerModule } from './app-logger/app-logger.module';
       },
     }),
     AppLoggerModule.forRoot({ provider: process.env.APP_LOGGER_PROVIDER }),
+    EventEmitterModule.forRoot({ provider: process.env.EVENT_EMITTER_PROVIDER }),
     CommonModule,
     AuthModule,
     StorageAuthModule,

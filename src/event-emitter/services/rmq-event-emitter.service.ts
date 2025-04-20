@@ -1,9 +1,10 @@
 import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
+import { EventEmitter } from '../interfaces/event-emitter.interface';
 import { ClientProxy, ClientProxyFactory, Transport } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 
 @Injectable()
-export class MessageQueueProducerService implements OnApplicationBootstrap {
+export class RmqEventEmitterService implements EventEmitter, OnApplicationBootstrap {
   private client: ClientProxy;
 
   async onApplicationBootstrap() {
@@ -20,7 +21,7 @@ export class MessageQueueProducerService implements OnApplicationBootstrap {
     });
   }
 
-  async emit(pattern: string, data: any) {
-    await firstValueFrom(this.client.emit(pattern, data));
+  async emit<T = any>(pattern: string, payload: T) {
+    await firstValueFrom(this.client.emit(pattern, payload));
   }
 }

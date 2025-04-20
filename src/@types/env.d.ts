@@ -7,6 +7,7 @@ declare namespace NodeJS {
     BROKER_URL: string;
     QUEUE_NAME: string;
     APP_LOGGER_PROVIDER: AppLogger.AppLoggerProviderOptions;
+    EVENT_EMITTER_PROVIDER: EventEmitter.EventEmitterProviderOptions;
     NODE_ENV: string;
   }
 }
