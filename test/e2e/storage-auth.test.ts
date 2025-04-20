@@ -5,12 +5,12 @@ import { AppModule } from '@/app.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule } from '@nestjs/config';
 import { faker } from '@faker-js/faker';
-import request from 'supertest';
-import { createContainers } from '@test/helpers';
+import { createContainers, closeContainers } from '@test/helpers';
 import { JwtTokenService } from '@/jwt-token/services/jwt-token.service';
 import { JwtTokenType } from '@/jwt-token/enums/jwt-token-type.enum';
+import request from 'supertest';
 
-describe('Authentication endpoints', () => {
+describe('Storage authentication endpoints', () => {
   let app: INestApplication<App>;
   let token: string = '';
   let jwtTokenService: JwtTokenService;
@@ -26,6 +26,7 @@ describe('Authentication endpoints', () => {
   }, 30000);
 
   beforeEach(async () => {
+    await app?.close();
     const module: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
@@ -51,6 +52,10 @@ describe('Authentication endpoints', () => {
 
     jwtTokenService = module.get(JwtTokenService);
     token = jwtTokenService.create(tokenPayload, JwtTokenType.APP);
+  });
+
+  afterAll(async () => {
+    await closeContainers();
   });
 
   describe('POST /storage/', () => {

@@ -3,8 +3,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { App } from 'supertest/types';
 import { faker } from '@faker-js/faker';
 import { AppModule } from '@/app.module';
+import { createContainers, closeContainers } from '@test/helpers';
 import request from 'supertest';
-import { createContainers } from '@test/helpers';
 
 describe('Authentication endpoints', () => {
   let app: INestApplication<App>;
@@ -20,12 +20,17 @@ describe('Authentication endpoints', () => {
   }, 30000);
 
   beforeEach(async () => {
+    await app?.close();
     const module: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
 
     app = module.createNestApplication();
     await app.init();
+  });
+
+  afterAll(async () => {
+    await closeContainers();
   });
 
   describe('POST /auth/register', () => {

@@ -1,10 +1,10 @@
-import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
+import { Injectable, OnApplicationBootstrap, OnApplicationShutdown } from '@nestjs/common';
 import { EventEmitter } from '../interfaces/event-emitter.interface';
 import { ClientProxy, ClientProxyFactory, Transport } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 
 @Injectable()
-export class RmqEventEmitterService implements EventEmitter, OnApplicationBootstrap {
+export class RmqEventEmitterService implements EventEmitter, OnApplicationBootstrap, OnApplicationShutdown {
   private client: ClientProxy;
 
   async onApplicationBootstrap() {
@@ -19,6 +19,10 @@ export class RmqEventEmitterService implements EventEmitter, OnApplicationBootst
         },
       },
     });
+  }
+
+  async onApplicationShutdown() {
+    await this.client.close();
   }
 
   async emit<T = any>(pattern: string, payload: T) {
