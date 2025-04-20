@@ -15,6 +15,7 @@ import { ExceptionHandlerFilter } from '@/common/filters/exception-handler.filte
 import { JwtModule } from '@nestjs/jwt';
 import { StorageAuthModule } from './storage-auth/storage-auth.module';
 import { JwtTokenModule } from './jwt-token/jwt-token.module';
+import { AppLoggerModule } from './app-logger/app-logger.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { JwtTokenModule } from './jwt-token/jwt-token.module';
         issuer: process.env.JWT_ISSUER,
       },
     }),
+    AppLoggerModule.forRoot({ provider: process.env.APP_LOGGER_PROVIDER }),
     CommonModule,
     AuthModule,
     StorageAuthModule,

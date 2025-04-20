@@ -6,5 +6,7 @@ declare namespace NodeJS {
     JWT_ISSUER: string;
     BROKER_URL: string;
     QUEUE_NAME: string;
+    APP_LOGGER_PROVIDER: AppLogger.AppLoggerProviderOptions;
+    NODE_ENV: string;
   }
 }

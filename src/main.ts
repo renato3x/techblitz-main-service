@@ -1,8 +1,14 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { AppLoggerFactory } from './app-logger/app-logger.factory';
+import { AppLoggerAdapter } from './app-logger/adapters/app-logger.adapter';
 
 async function bootstrap(): Promise<void> {
-  const app = await NestFactory.create(AppModule);
+  const AppLogger = AppLoggerFactory.getAppLogger(process.env.APP_LOGGER_PROVIDER);
+  const logger = new AppLoggerAdapter(new AppLogger());
+
+  const app = await NestFactory.create(AppModule, { logger });
+
   app.setGlobalPrefix('v1');
   await app.listen(process.env.PORT ?? 3000);
 }
