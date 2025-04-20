@@ -22,6 +22,7 @@ jobs:
       QUEUE_NAME: ${{ secrets.TESTS_QUEUE_NAME }}
       DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
       APP_LOGGER_PROVIDER: ${{ secrets.TESTS_APP_LOGGER_PROVIDER }}
+      EVENT_EMITTER_PROVIDER: ${{ secrets.TEST_EVENT_EMITTER_PROVIDER }}
       NODE_ENV: development
 
     steps:
