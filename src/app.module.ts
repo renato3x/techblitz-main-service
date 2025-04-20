@@ -17,7 +17,6 @@ import { StorageAuthModule } from './storage-auth/storage-auth.module';
 import { JwtTokenModule } from './jwt-token/jwt-token.module';
 import { AppLoggerModule } from './app-logger/app-logger.module';
 import { EventEmitterModule } from './event-emitter/event-emitter.module';
-import { RequestInterceptor } from './common/interceptors/request.interceptor';
 
 @Module({
   imports: [
@@ -46,10 +45,6 @@ import { RequestInterceptor } from './common/interceptors/request.interceptor';
     {
       provide: APP_FILTER,
       useClass: ExceptionHandlerFilter,
-    },
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: RequestInterceptor,
     },
     {
       provide: APP_INTERCEPTOR,

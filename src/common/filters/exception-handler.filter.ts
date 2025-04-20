@@ -29,6 +29,7 @@ export class ExceptionHandlerFilter<T extends Error> implements ExceptionFilter 
 
       response.status(statusCode).json({
         ...(typeof data === 'string' ? { message: data } : data),
+        statusCode: undefined,
         status_code: statusCode,
         timestamp,
       });
