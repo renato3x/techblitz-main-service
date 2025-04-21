@@ -153,7 +153,7 @@ describe('Authentication endpoints', () => {
       expect(response.body.status_code).toBe(400);
     });
 
-    it('should return an object with property "valid" with value "true" if informed email is already registered', async () => {
+    it('should return an object with property "valid" with value "false" if informed email is already registered', async () => {
       const response = await request(app.getHttpServer())
         .get('/auth/check')
         .query({ field: 'email', value: user.email })
@@ -165,7 +165,7 @@ describe('Authentication endpoints', () => {
       expect(response.body.data).toBeDefined();
 
       expect(response.body.data.valid).toBeDefined();
-      expect(response.body.data.valid).toBe(true);
+      expect(response.body.data.valid).toBe(false);
 
       expect(response.body.data.field).toBeDefined();
       expect(response.body.data.field).toBe('email');
@@ -178,7 +178,7 @@ describe('Authentication endpoints', () => {
       expect(response.body.status_code).toBe(200);
     });
 
-    it('should return an object with property "valid" with value "true" if informed username is already registered', async () => {
+    it('should return an object with property "valid" with value "false" if informed username is already registered', async () => {
       const response = await request(app.getHttpServer())
         .get('/auth/check')
         .query({ field: 'username', value: user.username })
@@ -190,7 +190,7 @@ describe('Authentication endpoints', () => {
       expect(response.body.data).toBeDefined();
 
       expect(response.body.data.valid).toBeDefined();
-      expect(response.body.data.valid).toBe(true);
+      expect(response.body.data.valid).toBe(false);
 
       expect(response.body.data.field).toBeDefined();
       expect(response.body.data.field).toBe('username');
@@ -203,7 +203,7 @@ describe('Authentication endpoints', () => {
       expect(response.body.status_code).toBe(200);
     });
 
-    it('should return an object with property "valid" with value "false" if informed email is not registered', async () => {
+    it('should return an object with property "valid" with value "true" if informed email is not registered', async () => {
       const response = await request(app.getHttpServer())
         .get('/auth/check')
         .query({ field: 'email', value: 'email.not.registered@notregistered.com' })
@@ -215,20 +215,20 @@ describe('Authentication endpoints', () => {
       expect(response.body.data).toBeDefined();
 
       expect(response.body.data.valid).toBeDefined();
-      expect(response.body.data.valid).toBe(false);
+      expect(response.body.data.valid).toBe(true);
 
       expect(response.body.data.field).toBeDefined();
       expect(response.body.data.field).toBe('email');
 
       expect(response.body.data.value).toBeDefined();
-      expect(response.body.data.value).toBe(user.email);
+      expect(response.body.data.value).toBe('email.not.registered@notregistered.com');
 
       expect(response.body.timestamp).toBeDefined();
       expect(response.body.status_code).toBeDefined();
       expect(response.body.status_code).toBe(200);
     });
 
-    it('should return an object with property "valid" with value "false" if informed username is not registered', async () => {
+    it('should return an object with property "valid" with value "true" if informed username is not registered', async () => {
       const response = await request(app.getHttpServer())
         .get('/auth/check')
         .query({ field: 'username', value: 'username.not.registered' })
@@ -240,13 +240,13 @@ describe('Authentication endpoints', () => {
       expect(response.body.data).toBeDefined();
 
       expect(response.body.data.valid).toBeDefined();
-      expect(response.body.data.valid).toBe(false);
+      expect(response.body.data.valid).toBe(true);
 
       expect(response.body.data.field).toBeDefined();
       expect(response.body.data.field).toBe('username');
 
       expect(response.body.data.value).toBeDefined();
-      expect(response.body.data.value).toBe(user.username);
+      expect(response.body.data.value).toBe('username.not.registered');
 
       expect(response.body.timestamp).toBeDefined();
       expect(response.body.status_code).toBeDefined();

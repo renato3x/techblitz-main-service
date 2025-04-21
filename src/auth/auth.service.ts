@@ -5,6 +5,7 @@ import { PasswordService } from '@/common/services/password.service';
 import { LoginUserDto } from './dto/login-user.dto';
 import { JwtTokenService } from '@/jwt-token/services/jwt-token.service';
 import { JwtTokenType } from '@/jwt-token/enums/jwt-token-type.enum';
+import { CheckUsernameEmailDto } from './dto/check-username-email.dto';
 
 @Injectable()
 export class AuthService {
@@ -78,6 +79,20 @@ export class AuthService {
     const token = this.jwtTokenService.create(payload, JwtTokenType.APP);
 
     return { token };
+  }
+
+  async checkUsernameOrEmail({ field, value }: CheckUsernameEmailDto) {
+    const count = await this.prisma.user.count({
+      where: {
+        [field]: value,
+      },
+    });
+
+    return {
+      field,
+      value,
+      valid: count === 0,
+    };
   }
 
   private async throwErrorIfUserWithSameUsernameAlreadyExists(username: string) {

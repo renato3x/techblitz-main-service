@@ -40,7 +40,7 @@ export class AuthController {
 
   @Get('check')
   @HttpCode(HttpStatus.OK)
-  async log(@Query() _query: CheckUsernameEmailDto) {
-    return;
+  async checkUsernameOrEmail(@Query() query: CheckUsernameEmailDto) {
+    return await this.authService.checkUsernameOrEmail(query);
   }
 }
