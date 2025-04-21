@@ -59,7 +59,47 @@ describe('Storage authentication endpoints', () => {
   });
 
   describe('POST /storage/', () => {
-    it("should block request if jwt token isn't sent in authorization header", async () => {
+    it('should block request if option "type" is not sent within the body', async () => {
+      const body = {
+        context: 'upload',
+      };
+
+      const response = await request(app.getHttpServer())
+        .post('/storage')
+        .set('Authorization', `Bearer ${token}`)
+        .send(body);
+
+      expect(response.status).toBe(400);
+      expect(response.body).toBeDefined();
+      expect(response.body.message).toBeDefined();
+      expect(response.body.message).toBe('Validation error');
+      expect(response.body.errors).toContain('Type is required');
+      expect(response.body.timestamp).toBeDefined();
+      expect(response.body.status_code).toBeDefined();
+      expect(response.body.status_code).toBe(400);
+    });
+
+    it('should block request if option "context" is not sent within the body', async () => {
+      const body = {
+        type: 'avatars',
+      };
+
+      const response = await request(app.getHttpServer())
+        .post('/storage')
+        .set('Authorization', `Bearer ${token}`)
+        .send(body);
+
+      expect(response.status).toBe(400);
+      expect(response.body).toBeDefined();
+      expect(response.body.message).toBeDefined();
+      expect(response.body.message).toBe('Validation error');
+      expect(response.body.errors).toContain('Context is required');
+      expect(response.body.timestamp).toBeDefined();
+      expect(response.body.status_code).toBeDefined();
+      expect(response.body.status_code).toBe(400);
+    });
+
+    it('should block request if jwt token is not sent in authorization header', async () => {
       const body = {
         type: 'avatars',
         context: 'upload',
@@ -76,7 +116,7 @@ describe('Storage authentication endpoints', () => {
       expect(response.body.status_code).toBe(401);
     });
 
-    it("should block request if jwt token isn't starts with 'Bearer '", async () => {
+    it('should block request if jwt token is not starts with "Bearer "', async () => {
       const body = {
         type: 'avatars',
         context: 'upload',
@@ -93,7 +133,7 @@ describe('Storage authentication endpoints', () => {
       expect(response.body.status_code).toBe(401);
     });
 
-    it("should block request if jwt token isn't valid", async () => {
+    it('should block request if jwt token is not valid', async () => {
       const body = {
         type: 'avatars',
         context: 'upload',
@@ -139,6 +179,25 @@ describe('Storage authentication endpoints', () => {
       const body = {
         type: 'avatars',
         context: 'upload',
+      };
+
+      const response = await request(app.getHttpServer())
+        .post('/storage')
+        .set('Authorization', `Bearer ${token}`)
+        .send(body);
+
+      expect(response.status).toBe(200);
+      expect(response.body).toBeDefined();
+      expect(response.body.data.token).toBeDefined();
+      expect(response.body.timestamp).toBeDefined();
+      expect(response.body.status_code).toBeDefined();
+      expect(response.body.status_code).toBe(200);
+    });
+
+    it('should return an avatar delete jwt token', async () => {
+      const body = {
+        type: 'avatars',
+        context: 'delete',
       };
 
       const response = await request(app.getHttpServer())

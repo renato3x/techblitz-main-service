@@ -125,4 +125,132 @@ describe('Authentication endpoints', () => {
       expect(response.body.status_code).toBe(200);
     });
   });
+
+  describe('GET /auth/check', () => {
+    it('should block request if query param "field" is not sent', async () => {
+      const response = await request(app.getHttpServer()).get('/auth/check').query({ value: user.email }).send();
+
+      expect(response.status).toBe(400);
+      expect(response.body).toBeDefined();
+      expect(response.body.message).toBeDefined();
+      expect(response.body.message).toBe('Validation error');
+      expect(response.body.errors).toContain('Field is required');
+      expect(response.body.timestamp).toBeDefined();
+      expect(response.body.status_code).toBeDefined();
+      expect(response.body.status_code).toBe(400);
+    });
+
+    it('should block request if query param "value" is not sent', async () => {
+      const response = await request(app.getHttpServer()).get('/auth/check').query({ field: 'email' }).send();
+
+      expect(response.status).toBe(400);
+      expect(response.body).toBeDefined();
+      expect(response.body.message).toBeDefined();
+      expect(response.body.message).toBe('Validation error');
+      expect(response.body.errors).toContain('Value is required');
+      expect(response.body.timestamp).toBeDefined();
+      expect(response.body.status_code).toBeDefined();
+      expect(response.body.status_code).toBe(400);
+    });
+
+    it('should return an object with property "valid" with value "false" if informed email is already registered', async () => {
+      const response = await request(app.getHttpServer())
+        .get('/auth/check')
+        .query({ field: 'email', value: user.email })
+        .send();
+
+      expect(response.status).toBe(200);
+      expect(response.body).toBeDefined();
+
+      expect(response.body.data).toBeDefined();
+
+      expect(response.body.data.valid).toBeDefined();
+      expect(response.body.data.valid).toBe(false);
+
+      expect(response.body.data.field).toBeDefined();
+      expect(response.body.data.field).toBe('email');
+
+      expect(response.body.data.value).toBeDefined();
+      expect(response.body.data.value).toBe(user.email);
+
+      expect(response.body.timestamp).toBeDefined();
+      expect(response.body.status_code).toBeDefined();
+      expect(response.body.status_code).toBe(200);
+    });
+
+    it('should return an object with property "valid" with value "false" if informed username is already registered', async () => {
+      const response = await request(app.getHttpServer())
+        .get('/auth/check')
+        .query({ field: 'username', value: user.username })
+        .send();
+
+      expect(response.status).toBe(200);
+      expect(response.body).toBeDefined();
+
+      expect(response.body.data).toBeDefined();
+
+      expect(response.body.data.valid).toBeDefined();
+      expect(response.body.data.valid).toBe(false);
+
+      expect(response.body.data.field).toBeDefined();
+      expect(response.body.data.field).toBe('username');
+
+      expect(response.body.data.value).toBeDefined();
+      expect(response.body.data.value).toBe(user.username);
+
+      expect(response.body.timestamp).toBeDefined();
+      expect(response.body.status_code).toBeDefined();
+      expect(response.body.status_code).toBe(200);
+    });
+
+    it('should return an object with property "valid" with value "true" if informed email is not registered', async () => {
+      const response = await request(app.getHttpServer())
+        .get('/auth/check')
+        .query({ field: 'email', value: 'email.not.registered@notregistered.com' })
+        .send();
+
+      expect(response.status).toBe(200);
+      expect(response.body).toBeDefined();
+
+      expect(response.body.data).toBeDefined();
+
+      expect(response.body.data.valid).toBeDefined();
+      expect(response.body.data.valid).toBe(true);
+
+      expect(response.body.data.field).toBeDefined();
+      expect(response.body.data.field).toBe('email');
+
+      expect(response.body.data.value).toBeDefined();
+      expect(response.body.data.value).toBe('email.not.registered@notregistered.com');
+
+      expect(response.body.timestamp).toBeDefined();
+      expect(response.body.status_code).toBeDefined();
+      expect(response.body.status_code).toBe(200);
+    });
+
+    it('should return an object with property "valid" with value "true" if informed username is not registered', async () => {
+      const response = await request(app.getHttpServer())
+        .get('/auth/check')
+        .query({ field: 'username', value: 'username.not.registered' })
+        .send();
+
+      expect(response.status).toBe(200);
+      expect(response.body).toBeDefined();
+
+      expect(response.body.data).toBeDefined();
+
+      expect(response.body.data.valid).toBeDefined();
+      expect(response.body.data.valid).toBe(true);
+
+      expect(response.body.data.field).toBeDefined();
+      expect(response.body.data.field).toBe('username');
+
+      expect(response.body.data.value).toBeDefined();
+      expect(response.body.data.value).toBe('username.not.registered');
+
+      expect(response.body.timestamp).toBeDefined();
+      expect(response.body.status_code).toBeDefined();
+      expect(response.body.status_code).toBe(200);
+    });
+  });
 });
