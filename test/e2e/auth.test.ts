@@ -66,7 +66,7 @@ describe('Authentication endpoints', () => {
       expect(response.status).toBe(400);
       expect(response.body).toBeDefined();
       expect(response.body.message).toBeDefined();
-      expect(/^Email .+@.+\..+ already exists/gim.test(response.body.message)).toBe(true);
+      expect(response.body.message).toBe('Email already exists');
       expect(response.body.timestamp).toBeDefined();
       expect(response.body.status_code).toBeDefined();
       expect(response.body.status_code).toBe(400);
@@ -85,7 +85,7 @@ describe('Authentication endpoints', () => {
       expect(response.status).toBe(400);
       expect(response.body).toBeDefined();
       expect(response.body.message).toBeDefined();
-      expect(/^Username .+ already exists/gim.test(response.body.message)).toBe(true);
+      expect(response.body.message).toBe('Username already exists');
       expect(response.body.timestamp).toBeDefined();
       expect(response.body.status_code).toBeDefined();
       expect(response.body.status_code).toBe(400);

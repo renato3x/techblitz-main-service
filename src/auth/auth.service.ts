@@ -103,7 +103,7 @@ export class AuthService {
     });
 
     if (userWithSameUsername) {
-      throw new BadRequestException(`Username ${username} already exists`);
+      throw new BadRequestException('Username already exists');
     }
   }
 
@@ -115,7 +115,7 @@ export class AuthService {
     });
 
     if (userWithSameUsername) {
-      throw new BadRequestException(`Email ${email} already exists`);
+      throw new BadRequestException('Email already exists');
     }
   }
 }
