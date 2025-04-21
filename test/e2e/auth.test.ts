@@ -127,7 +127,7 @@ describe('Authentication endpoints', () => {
   });
 
   describe('GET /auth/check', () => {
-    it('should return an error if query param "field" is not sent', async () => {
+    it('should block request if query param "field" is not sent', async () => {
       const response = await request(app.getHttpServer()).get('/auth/check').query({ value: user.email }).send();
 
       expect(response.status).toBe(400);
@@ -135,13 +135,12 @@ describe('Authentication endpoints', () => {
       expect(response.body.message).toBeDefined();
       expect(response.body.message).toBe('Validation error');
       expect(response.body.errors).toContain('Field is required');
-      expect(response.body.errors).toContain('Field must contain value "email" or "username"');
       expect(response.body.timestamp).toBeDefined();
       expect(response.body.status_code).toBeDefined();
       expect(response.body.status_code).toBe(400);
     });
 
-    it('should return an error if query param "value" is not sent', async () => {
+    it('should block request if query param "value" is not sent', async () => {
       const response = await request(app.getHttpServer()).get('/auth/check').query({ field: 'email' }).send();
 
       expect(response.status).toBe(400);

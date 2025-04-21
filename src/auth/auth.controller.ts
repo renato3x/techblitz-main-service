@@ -1,9 +1,10 @@
-import { Body, Controller, HttpStatus, Post, HttpCode, Inject } from '@nestjs/common';
+import { Body, Controller, HttpStatus, Post, HttpCode, Inject, Get, Query } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
 import { EVENT_EMITTER_SERVICE } from '@/event-emitter/event-emitter.constants';
 import { EventEmitter } from '@/event-emitter/interfaces/event-emitter.interface';
+import { CheckUsernameEmailDto } from './dto/check-username-email.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -35,5 +36,11 @@ export class AuthController {
   async login(@Body() body: LoginUserDto) {
     const response = await this.authService.login(body);
     return response;
+  }
+
+  @Get('check')
+  @HttpCode(HttpStatus.OK)
+  async log(@Query() _query: CheckUsernameEmailDto) {
+    return;
   }
 }
