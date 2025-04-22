@@ -82,6 +82,14 @@ export class AuthService {
   }
 
   async checkUsernameOrEmail({ field, value }: CheckUsernameEmailDto) {
+    const isValidEmail = /^\S.+@.+\..+/gm;
+
+    if (field === 'email') {
+      if (!isValidEmail.test(value)) {
+        throw new BadRequestException('Informed email is not valid');
+      }
+    }
+
     const count = await this.prisma.user.count({
       where: {
         [field]: value,

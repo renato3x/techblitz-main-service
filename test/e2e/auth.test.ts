@@ -252,5 +252,21 @@ describe('Authentication endpoints', () => {
       expect(response.body.status_code).toBeDefined();
       expect(response.body.status_code).toBe(200);
     });
+
+    it('should block request if query param "field" is email and "value" is not a valid email', async () => {
+      const response = await request(app.getHttpServer())
+        .get('/auth/check')
+        .query({ field: 'email', value: 'thisisnotanemail' })
+        .send();
+
+      expect(response.status).toBe(400);
+      expect(response.body).toBeDefined();
+
+      expect(response.body.message).toBe('Informed email is not valid');
+
+      expect(response.body.timestamp).toBeDefined();
+      expect(response.body.status_code).toBeDefined();
+      expect(response.body.status_code).toBe(400);
+    });
   });
 });
