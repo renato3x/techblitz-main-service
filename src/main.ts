@@ -6,10 +6,11 @@ import { AppLoggerAdapter } from './app-logger/adapters/app-logger.adapter';
 async function bootstrap(): Promise<void> {
   const AppLogger = AppLoggerFactory.getAppLogger(process.env.APP_LOGGER_PROVIDER);
   const logger = new AppLoggerAdapter(new AppLogger());
-
   const app = await NestFactory.create(AppModule, { logger });
 
   app.setGlobalPrefix('v1');
+  app.enableCors({ origin: process.env.CLIENT_URL });
+
   await app.listen(process.env.PORT ?? 3000);
 }
 

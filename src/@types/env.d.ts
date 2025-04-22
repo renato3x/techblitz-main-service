@@ -9,5 +9,6 @@ declare namespace NodeJS {
     APP_LOGGER_PROVIDER: AppLogger.AppLoggerProviderOptions;
     EVENT_EMITTER_PROVIDER: EventEmitter.EventEmitterProviderOptions;
     NODE_ENV: string;
+    CLIENT_URL: string;
   }
 }
