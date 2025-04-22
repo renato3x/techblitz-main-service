@@ -134,7 +134,7 @@ describe('Authentication endpoints', () => {
       expect(response.body).toBeDefined();
       expect(response.body.message).toBeDefined();
       expect(response.body.message).toBe('Validation error');
-      expect(response.body.errors).toContain('Field is required');
+      expect(response.body.errors).toContain('"field" is required');
       expect(response.body.timestamp).toBeDefined();
       expect(response.body.status_code).toBeDefined();
       expect(response.body.status_code).toBe(400);
@@ -147,7 +147,7 @@ describe('Authentication endpoints', () => {
       expect(response.body).toBeDefined();
       expect(response.body.message).toBeDefined();
       expect(response.body.message).toBe('Validation error');
-      expect(response.body.errors).toContain('Value is required');
+      expect(response.body.errors).toContain('"value" is required');
       expect(response.body.timestamp).toBeDefined();
       expect(response.body.status_code).toBeDefined();
       expect(response.body.status_code).toBe(400);

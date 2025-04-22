@@ -73,7 +73,7 @@ describe('Storage authentication endpoints', () => {
       expect(response.body).toBeDefined();
       expect(response.body.message).toBeDefined();
       expect(response.body.message).toBe('Validation error');
-      expect(response.body.errors).toContain('Type is required');
+      expect(response.body.errors).toContain('"type" is required');
       expect(response.body.timestamp).toBeDefined();
       expect(response.body.status_code).toBeDefined();
       expect(response.body.status_code).toBe(400);
@@ -93,7 +93,7 @@ describe('Storage authentication endpoints', () => {
       expect(response.body).toBeDefined();
       expect(response.body.message).toBeDefined();
       expect(response.body.message).toBe('Validation error');
-      expect(response.body.errors).toContain('Context is required');
+      expect(response.body.errors).toContain('"context" is required');
       expect(response.body.timestamp).toBeDefined();
       expect(response.body.status_code).toBeDefined();
       expect(response.body.status_code).toBe(400);
