@@ -5,6 +5,7 @@ import { faker } from '@faker-js/faker';
 import { AppModule } from '@/app.module';
 import { createContainers, closeContainers } from '@test/helpers';
 import request from 'supertest';
+import cookieParser from 'cookie-parser';
 
 describe('Authentication endpoints', () => {
   let app: INestApplication<App>;
@@ -26,6 +27,7 @@ describe('Authentication endpoints', () => {
     }).compile();
 
     app = module.createNestApplication();
+    app.use(cookieParser());
     await app.init();
   });
 

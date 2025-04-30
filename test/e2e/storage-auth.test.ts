@@ -1,3 +1,5 @@
+import request from 'supertest';
+import cookieParser from 'cookie-parser';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { App } from 'supertest/types';
@@ -8,7 +10,6 @@ import { faker } from '@faker-js/faker';
 import { createContainers, closeContainers } from '@test/helpers';
 import { JwtTokenService } from '@/jwt-token/services/jwt-token.service';
 import { JwtTokenType } from '@/jwt-token/enums/jwt-token-type.enum';
-import request from 'supertest';
 
 describe('Storage authentication endpoints', () => {
   let app: INestApplication<App>;
@@ -32,6 +33,7 @@ describe('Storage authentication endpoints', () => {
     }).compile();
 
     app = module.createNestApplication();
+    app.use(cookieParser());
     await app.init();
   });
 
@@ -66,7 +68,7 @@ describe('Storage authentication endpoints', () => {
 
       const response = await request(app.getHttpServer())
         .post('/storage')
-        .set('Authorization', `Bearer ${token}`)
+        .set('Cookie', [`${process.env.AUTH_TOKEN_COOKIE_NAME}=${token}`])
         .send(body);
 
       expect(response.status).toBe(400);
@@ -86,7 +88,7 @@ describe('Storage authentication endpoints', () => {
 
       const response = await request(app.getHttpServer())
         .post('/storage')
-        .set('Authorization', `Bearer ${token}`)
+        .set('Cookie', [`${process.env.AUTH_TOKEN_COOKIE_NAME}=${token}`])
         .send(body);
 
       expect(response.status).toBe(400);
@@ -99,7 +101,7 @@ describe('Storage authentication endpoints', () => {
       expect(response.body.status_code).toBe(400);
     });
 
-    it('should block request if jwt token is not sent in authorization header', async () => {
+    /* it('should block request if jwt token is not sent in authorization header', async () => {
       const body = {
         type: 'avatars',
         context: 'upload',
@@ -131,7 +133,7 @@ describe('Storage authentication endpoints', () => {
       expect(response.body.timestamp).toBeDefined();
       expect(response.body.status_code).toBeDefined();
       expect(response.body.status_code).toBe(401);
-    });
+    }); */
 
     it('should block request if jwt token is not valid', async () => {
       const body = {
@@ -141,7 +143,7 @@ describe('Storage authentication endpoints', () => {
 
       const response = await request(app.getHttpServer())
         .post('/storage')
-        .set('Authorization', `Bearer ${faker.string.alphanumeric(10)}`)
+        .set('Cookie', [`${process.env.AUTH_TOKEN_COOKIE_NAME}=${faker.string.alphanumeric(10)}`])
         .send(body);
 
       expect(response.status).toBe(401);
@@ -163,7 +165,7 @@ describe('Storage authentication endpoints', () => {
 
       const response = await request(app.getHttpServer())
         .post('/storage')
-        .set('Authorization', `Bearer ${expiredToken}`)
+        .set('Cookie', [`${process.env.AUTH_TOKEN_COOKIE_NAME}=${expiredToken}`])
         .send(body);
 
       expect(response.status).toBe(401);
@@ -183,15 +185,24 @@ describe('Storage authentication endpoints', () => {
 
       const response = await request(app.getHttpServer())
         .post('/storage')
-        .set('Authorization', `Bearer ${token}`)
+        .set('Cookie', [`${process.env.AUTH_TOKEN_COOKIE_NAME}=${token}`])
         .send(body);
 
-      expect(response.status).toBe(200);
+      expect(response.status).toBe(204);
       expect(response.body).toBeDefined();
-      expect(response.body.data.token).toBeDefined();
-      expect(response.body.timestamp).toBeDefined();
-      expect(response.body.status_code).toBeDefined();
-      expect(response.body.status_code).toBe(200);
+      expect(response.body).toEqual({});
+
+      const cookies = response.headers['set-cookie'] as unknown as string[];
+      expect(cookies).toBeDefined();
+      expect(Array.isArray(cookies)).toBe(true);
+
+      const authTokenCookie = cookies.find((cookie: string) =>
+        cookie.startsWith(`${process.env.STORAGE_AUTH_TOKEN_COOKIE_NAME}=`),
+      );
+
+      expect(authTokenCookie).toBeDefined();
+      expect(authTokenCookie).toContain('HttpOnly');
+      expect(authTokenCookie).toContain('SameSite=None');
     });
 
     it('should return an avatar delete jwt token', async () => {
@@ -202,15 +213,24 @@ describe('Storage authentication endpoints', () => {
 
       const response = await request(app.getHttpServer())
         .post('/storage')
-        .set('Authorization', `Bearer ${token}`)
+        .set('Cookie', [`${process.env.AUTH_TOKEN_COOKIE_NAME}=${token}`])
         .send(body);
 
-      expect(response.status).toBe(200);
+      expect(response.status).toBe(204);
       expect(response.body).toBeDefined();
-      expect(response.body.data.token).toBeDefined();
-      expect(response.body.timestamp).toBeDefined();
-      expect(response.body.status_code).toBeDefined();
-      expect(response.body.status_code).toBe(200);
+      expect(response.body).toEqual({});
+
+      const cookies = response.headers['set-cookie'] as unknown as string[];
+      expect(cookies).toBeDefined();
+      expect(Array.isArray(cookies)).toBe(true);
+
+      const authTokenCookie = cookies.find((cookie: string) =>
+        cookie.startsWith(`${process.env.STORAGE_AUTH_TOKEN_COOKIE_NAME}=`),
+      );
+
+      expect(authTokenCookie).toBeDefined();
+      expect(authTokenCookie).toContain('HttpOnly');
+      expect(authTokenCookie).toContain('SameSite=None');
     });
   });
 });

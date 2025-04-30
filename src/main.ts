@@ -1,3 +1,4 @@
+import cookieParser from 'cookie-parser';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { AppLoggerFactory } from './app-logger/app-logger.factory';
@@ -16,6 +17,7 @@ async function bootstrap(): Promise<void> {
     },
   });
 
+  app.use(cookieParser());
   app.setGlobalPrefix('v1');
   await app.listen(process.env.PORT ?? 3000);
 }

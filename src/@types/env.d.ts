@@ -11,5 +11,6 @@ declare namespace NodeJS {
     NODE_ENV: string;
     CLIENT_URL: string;
     AUTH_TOKEN_COOKIE_NAME: string;
+    STORAGE_AUTH_TOKEN_COOKIE_NAME: string;
   }
 }

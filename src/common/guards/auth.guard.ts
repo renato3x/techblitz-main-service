@@ -12,13 +12,12 @@ export class AuthGuard implements CanActivate {
     const http = context.switchToHttp();
     const request = http.getRequest<Request>();
 
-    const authorization = request.headers.authorization;
+    const token = request.cookies[process.env.AUTH_TOKEN_COOKIE_NAME];
 
-    if (!authorization || !authorization.startsWith('Bearer ')) {
+    if (!token) {
       throw new UnauthorizedException('Access token is missing');
     }
 
-    const token = authorization.substring(7);
     const unauthorizedException = new UnauthorizedException('Access token is invalid');
 
     try {
