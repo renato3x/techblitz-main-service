@@ -23,6 +23,8 @@ jobs:
       APP_LOGGER_PROVIDER: ${{ secrets.TESTS_APP_LOGGER_PROVIDER }}
       EVENT_EMITTER_PROVIDER: ${{ secrets.TEST_EVENT_EMITTER_PROVIDER }}
       NODE_ENV: development
+      AUTH_TOKEN_COOKIE_NAME: auth_token
+      STORAGE_AUTH_TOKEN_COOKIE_NAME: storage_auth_token
 
     steps:
       - name: Checkout repository

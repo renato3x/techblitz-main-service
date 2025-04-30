@@ -101,7 +101,7 @@ describe('Storage authentication endpoints', () => {
       expect(response.body.status_code).toBe(400);
     });
 
-    /* it('should block request if jwt token is not sent in authorization header', async () => {
+    it(`should block request if jwt token is not sent in ${process.env.AUTH_TOKEN_COOKIE_NAME} cookie`, async () => {
       const body = {
         type: 'avatars',
         context: 'upload',
@@ -117,23 +117,6 @@ describe('Storage authentication endpoints', () => {
       expect(response.body.status_code).toBeDefined();
       expect(response.body.status_code).toBe(401);
     });
-
-    it('should block request if jwt token is not starts with "Bearer "', async () => {
-      const body = {
-        type: 'avatars',
-        context: 'upload',
-      };
-
-      const response = await request(app.getHttpServer()).post('/storage').set('Authorization', token).send(body);
-
-      expect(response.status).toBe(401);
-      expect(response.body).toBeDefined();
-      expect(response.body.message).toBeDefined();
-      expect(response.body.message).toBe('Access token is missing');
-      expect(response.body.timestamp).toBeDefined();
-      expect(response.body.status_code).toBeDefined();
-      expect(response.body.status_code).toBe(401);
-    }); */
 
     it('should block request if jwt token is not valid', async () => {
       const body = {
