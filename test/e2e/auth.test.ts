@@ -34,7 +34,7 @@ describe('Authentication endpoints', () => {
   });
 
   describe('POST /auth/register', () => {
-    it('should register a new user and returns an authentication token and id, email and username', async () => {
+    it('should register a new user and return user data with the auth token in an HTTP-only cookie', async () => {
       const response = await request(app.getHttpServer()).post('/auth/register').send(user);
 
       expect(response.status).toBe(201);
@@ -42,7 +42,6 @@ describe('Authentication endpoints', () => {
       expect(response.body).toBeDefined();
 
       expect(response.body.data).toBeDefined();
-      expect(response.body.data.token).toBeDefined();
       expect(response.body.data.user).toBeDefined();
       expect(response.body.data.user.id).toBeDefined();
       expect(response.body.data.user.email).toBeDefined();
@@ -51,6 +50,18 @@ describe('Authentication endpoints', () => {
       expect(response.body.timestamp).toBeDefined();
       expect(response.body.status_code).toBeDefined();
       expect(response.body.status_code).toBe(201);
+
+      const cookies = response.headers['set-cookie'] as unknown as string[];
+      expect(cookies).toBeDefined();
+      expect(Array.isArray(cookies)).toBe(true);
+
+      const authTokenCookie = cookies.find((cookie: string) =>
+        cookie.startsWith(`${process.env.AUTH_TOKEN_COOKIE_NAME}=`),
+      );
+
+      expect(authTokenCookie).toBeDefined();
+      expect(authTokenCookie).toContain('HttpOnly');
+      expect(authTokenCookie).toContain('SameSite=Strict');
     });
 
     it('should block the registration of a new user if email already exists', async () => {
@@ -101,12 +112,21 @@ describe('Authentication endpoints', () => {
 
       const response = await request(app.getHttpServer()).post('/auth/login').send(body);
 
-      expect(response.status).toBe(200);
+      expect(response.status).toBe(204);
       expect(response.body).toBeDefined();
-      expect(response.body.data.token).toBeDefined();
-      expect(response.body.timestamp).toBeDefined();
-      expect(response.body.status_code).toBeDefined();
-      expect(response.body.status_code).toBe(200);
+      expect(response.body).toEqual({});
+
+      const cookies = response.headers['set-cookie'] as unknown as string[];
+      expect(cookies).toBeDefined();
+      expect(Array.isArray(cookies)).toBe(true);
+
+      const authTokenCookie = cookies.find((cookie: string) =>
+        cookie.startsWith(`${process.env.AUTH_TOKEN_COOKIE_NAME}=`),
+      );
+
+      expect(authTokenCookie).toBeDefined();
+      expect(authTokenCookie).toContain('HttpOnly');
+      expect(authTokenCookie).toContain('SameSite=Strict');
     });
 
     it('should login user by email and password', async () => {
@@ -117,12 +137,21 @@ describe('Authentication endpoints', () => {
 
       const response = await request(app.getHttpServer()).post('/auth/login').send(body);
 
-      expect(response.status).toBe(200);
+      expect(response.status).toBe(204);
       expect(response.body).toBeDefined();
-      expect(response.body.data.token).toBeDefined();
-      expect(response.body.timestamp).toBeDefined();
-      expect(response.body.status_code).toBeDefined();
-      expect(response.body.status_code).toBe(200);
+      expect(response.body).toEqual({});
+
+      const cookies = response.headers['set-cookie'] as unknown as string[];
+      expect(cookies).toBeDefined();
+      expect(Array.isArray(cookies)).toBe(true);
+
+      const authTokenCookie = cookies.find((cookie: string) =>
+        cookie.startsWith(`${process.env.AUTH_TOKEN_COOKIE_NAME}=`),
+      );
+
+      expect(authTokenCookie).toBeDefined();
+      expect(authTokenCookie).toContain('HttpOnly');
+      expect(authTokenCookie).toContain('SameSite=Strict');
     });
   });
 

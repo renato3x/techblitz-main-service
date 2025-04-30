@@ -10,5 +10,6 @@ declare namespace NodeJS {
     EVENT_EMITTER_PROVIDER: EventEmitter.EventEmitterProviderOptions;
     NODE_ENV: string;
     CLIENT_URL: string;
+    AUTH_TOKEN_COOKIE_NAME: string;
   }
 }

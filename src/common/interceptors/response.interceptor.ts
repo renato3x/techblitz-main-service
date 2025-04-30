@@ -12,6 +12,10 @@ export class ResponseInterceptor implements NestInterceptor {
       map((data) => {
         const timestamp = new Date().toISOString();
 
+        if (response.statusCode === 204) {
+          return;
+        }
+
         return {
           data,
           timestamp,
