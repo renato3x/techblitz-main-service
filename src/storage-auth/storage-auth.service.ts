@@ -12,8 +12,6 @@ export class StorageAuthService {
       scope: `${createStorageTokenDto.type}:${createStorageTokenDto.context}`,
     };
 
-    const token = this.jwtTokenService.create(payload, JwtTokenType.STORAGE);
-
-    return { token };
+    return this.jwtTokenService.create(payload, JwtTokenType.STORAGE);
   }
 }

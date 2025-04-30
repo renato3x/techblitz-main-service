@@ -12,12 +12,12 @@ export class StorageAuthController {
   @Post()
   @HttpCode(HttpStatus.NO_CONTENT)
   createStorageToken(@Body() body: CreateStorageTokenDto, @Res({ passthrough: true }) response: Response) {
-    const { token } = this.storageAuthService.createStorageToken(body);
+    const { token, expiresIn } = this.storageAuthService.createStorageToken(body);
     response.cookie(process.env.STORAGE_AUTH_TOKEN_COOKIE_NAME, token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'none',
-      maxAge: 1000 * 60 * 2,
+      maxAge: expiresIn,
     });
   }
 }

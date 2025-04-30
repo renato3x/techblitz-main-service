@@ -18,14 +18,14 @@ export class AuthController {
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
   async register(@Body() body: RegisterUserDto, @Res({ passthrough: true }) response: Response) {
-    const { token, user } = await this.authService.register(body);
+    const { token, user, expiresIn } = await this.authService.register(body);
     await this.eventEmitter.emit('user.registered', user);
 
     response.cookie(process.env.AUTH_TOKEN_COOKIE_NAME, token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
-      maxAge: 1000 * 60 * 60 * 24 * 7,
+      maxAge: expiresIn,
     });
 
     return {
@@ -41,13 +41,13 @@ export class AuthController {
   @Post('login')
   @HttpCode(HttpStatus.NO_CONTENT)
   async login(@Body() body: LoginUserDto, @Res({ passthrough: true }) response: Response) {
-    const { token } = await this.authService.login(body);
+    const { token, expiresIn } = await this.authService.login(body);
 
     response.cookie(process.env.AUTH_TOKEN_COOKIE_NAME, token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
-      maxAge: 1000 * 60 * 60 * 2,
+      maxAge: expiresIn,
     });
 
     return;

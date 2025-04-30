@@ -40,9 +40,9 @@ export class AuthService {
       username: user.username,
     };
 
-    const token = this.jwtTokenService.create(payload, JwtTokenType.APP);
+    const { token, expiresIn } = this.jwtTokenService.create(payload, JwtTokenType.APP);
 
-    return { user, token };
+    return { user, token, expiresIn };
   }
 
   async login(loginUserDto: LoginUserDto) {
@@ -76,9 +76,7 @@ export class AuthService {
       username: user.username,
     };
 
-    const token = this.jwtTokenService.create(payload, JwtTokenType.APP);
-
-    return { token };
+    return this.jwtTokenService.create(payload, JwtTokenType.APP);
   }
 
   async checkUsernameOrEmail({ field, value }: CheckUsernameEmailDto) {

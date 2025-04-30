@@ -53,7 +53,7 @@ describe('Storage authentication endpoints', () => {
     }).compile();
 
     jwtTokenService = module.get(JwtTokenService);
-    token = jwtTokenService.create(tokenPayload, JwtTokenType.APP);
+    token = jwtTokenService.create(tokenPayload, JwtTokenType.APP).token;
   });
 
   afterAll(async () => {
