@@ -1,4 +1,4 @@
-import { Body, Controller, HttpStatus, Post, HttpCode, Inject, Get, Query, Res } from '@nestjs/common';
+import { Body, Controller, HttpStatus, Post, HttpCode, Inject, Get, Query, Res, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
@@ -6,6 +6,7 @@ import { EVENT_EMITTER_SERVICE } from '@/event-emitter/event-emitter.constants';
 import { EventEmitter } from '@/event-emitter/interfaces/event-emitter.interface';
 import { CheckUsernameEmailDto } from './dto/check-username-email.dto';
 import { Response } from 'express';
+import { AuthGuard } from '@/common/guards/auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -49,6 +50,7 @@ export class AuthController {
   }
 
   @Post('logout')
+  @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   async logout(@Res({ passthrough: true }) response: Response) {
     response.clearCookie(process.env.AUTH_TOKEN_COOKIE_NAME, {

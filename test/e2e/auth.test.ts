@@ -14,11 +14,18 @@ import { JwtTokenType } from '@/jwt-token/enums/jwt-token-type.enum';
 describe('Authentication endpoints', () => {
   let app: INestApplication<App>;
   let token: string = '';
+  let jwtTokenService: JwtTokenService;
   const user = {
     name: 'John Doe',
     username: 'john.doe',
     email: 'john.doe@helloworld.com',
     password: faker.internet.password({ length: 10 }),
+  };
+
+  const tokenPayload = {
+    sub: faker.string.uuid(),
+    email: faker.internet.email().toLowerCase(),
+    username: faker.internet.username().toLowerCase(),
   };
 
   beforeAll(async () => {
@@ -37,12 +44,7 @@ describe('Authentication endpoints', () => {
       providers: [JwtTokenService],
     }).compile();
 
-    const jwtTokenService = module.get(JwtTokenService);
-    const tokenPayload = {
-      sub: faker.string.uuid(),
-      email: faker.internet.email().toLowerCase(),
-      username: faker.internet.username().toLowerCase(),
-    };
+    jwtTokenService = module.get(JwtTokenService);
     token = jwtTokenService.create(tokenPayload, JwtTokenType.APP).token;
   }, 30000);
 
@@ -232,6 +234,50 @@ describe('Authentication endpoints', () => {
 
       expect(authTokenCookie).toBeDefined();
       expect(authTokenCookie).toContain('Expires=Thu, 01 Jan 1970');
+    });
+
+    it('should block logout if auth token is missing', async () => {
+      const response = await request(app.getHttpServer()).post('/auth/logout').send();
+
+      expect(response.status).toBe(401);
+      expect(response.body).toBeDefined();
+      expect(response.body.message).toBeDefined();
+      expect(response.body.message).toBe('Access token is missing');
+      expect(response.body.timestamp).toBeDefined();
+      expect(response.body.status_code).toBeDefined();
+      expect(response.body.status_code).toBe(401);
+    });
+
+    it('should block logout if auth token is invalid', async () => {
+      const response = await request(app.getHttpServer())
+        .post('/auth/logout')
+        .set('Cookie', [`${process.env.AUTH_TOKEN_COOKIE_NAME}=${faker.string.alphanumeric(10)}`])
+        .send();
+
+      expect(response.status).toBe(401);
+      expect(response.body).toBeDefined();
+      expect(response.body.message).toBeDefined();
+      expect(response.body.message).toBe('Access token is invalid');
+      expect(response.body.timestamp).toBeDefined();
+      expect(response.body.status_code).toBeDefined();
+      expect(response.body.status_code).toBe(401);
+    });
+
+    it('should block logout if jwt token is expired', async () => {
+      const expiredToken = jwtTokenService.create(tokenPayload, JwtTokenType.EXPIRED);
+
+      const response = await request(app.getHttpServer())
+        .post('/auth/logout')
+        .set('Cookie', [`${process.env.AUTH_TOKEN_COOKIE_NAME}=${expiredToken}`])
+        .send();
+
+      expect(response.status).toBe(401);
+      expect(response.body).toBeDefined();
+      expect(response.body.message).toBeDefined();
+      expect(response.body.message).toBe('Access token is invalid');
+      expect(response.body.timestamp).toBeDefined();
+      expect(response.body.status_code).toBeDefined();
+      expect(response.body.status_code).toBe(401);
     });
   });
 

@@ -60,7 +60,7 @@ describe('Storage authentication endpoints', () => {
     await closeContainers();
   });
 
-  describe('POST /storage/', () => {
+  describe('POST /storage', () => {
     it('should block request if option "type" is not sent within the body', async () => {
       const body = {
         context: 'upload',
