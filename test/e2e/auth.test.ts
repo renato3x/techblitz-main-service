@@ -6,9 +6,14 @@ import { AppModule } from '@/app.module';
 import { createContainers, closeContainers } from '@test/helpers';
 import request from 'supertest';
 import cookieParser from 'cookie-parser';
+import { JwtModule } from '@nestjs/jwt';
+import { ConfigModule } from '@nestjs/config';
+import { JwtTokenService } from '@/jwt-token/services/jwt-token.service';
+import { JwtTokenType } from '@/jwt-token/enums/jwt-token-type.enum';
 
 describe('Authentication endpoints', () => {
   let app: INestApplication<App>;
+  let token: string = '';
   const user = {
     name: 'John Doe',
     username: 'john.doe',
@@ -18,6 +23,27 @@ describe('Authentication endpoints', () => {
 
   beforeAll(async () => {
     await createContainers();
+    const module: TestingModule = await Test.createTestingModule({
+      imports: [
+        JwtModule.register({
+          global: true,
+          secret: process.env.JWT_SECRET,
+          signOptions: {
+            issuer: process.env.JWT_ISSUER,
+          },
+        }),
+        ConfigModule.forRoot({ isGlobal: true }),
+      ],
+      providers: [JwtTokenService],
+    }).compile();
+
+    const jwtTokenService = module.get(JwtTokenService);
+    const tokenPayload = {
+      sub: faker.string.uuid(),
+      email: faker.internet.email().toLowerCase(),
+      username: faker.internet.username().toLowerCase(),
+    };
+    token = jwtTokenService.create(tokenPayload, JwtTokenType.APP).token;
   }, 30000);
 
   beforeEach(async () => {
@@ -183,6 +209,29 @@ describe('Authentication endpoints', () => {
       expect(authTokenCookie).toBeDefined();
       expect(authTokenCookie).toContain('HttpOnly');
       expect(authTokenCookie).toContain('SameSite=Strict');
+    });
+  });
+
+  describe('POST /auth/logout', () => {
+    it('should logout user removing auth token cookie', async () => {
+      const response = await request(app.getHttpServer())
+        .post('/auth/logout')
+        .set('Cookie', [`${process.env.AUTH_TOKEN_COOKIE_NAME}=${token}`])
+        .send();
+
+      expect(response.status).toBe(204);
+      expect(response.body).toEqual({});
+
+      const cookies = response.headers['set-cookie'] as unknown as string[];
+      expect(cookies).toBeDefined();
+      expect(Array.isArray(cookies)).toBe(true);
+
+      const authTokenCookie = cookies.find((cookie: string) =>
+        cookie.startsWith(`${process.env.AUTH_TOKEN_COOKIE_NAME}=`),
+      );
+
+      expect(authTokenCookie).toBeDefined();
+      expect(authTokenCookie).toContain('Expires=Thu, 01 Jan 1970');
     });
   });
 

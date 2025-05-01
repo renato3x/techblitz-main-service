@@ -18,6 +18,7 @@ export class StorageAuthController {
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'none',
       maxAge: expiresIn,
+      path: '/',
     });
   }
 }
