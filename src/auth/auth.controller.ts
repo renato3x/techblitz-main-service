@@ -50,7 +50,6 @@ export class AuthController {
   }
 
   @Post('logout')
-  @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   async logout(@Res({ passthrough: true }) response: Response) {
     response.clearCookie(process.env.AUTH_TOKEN_COOKIE_NAME, {

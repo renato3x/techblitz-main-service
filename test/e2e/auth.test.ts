@@ -239,50 +239,6 @@ describe('Authentication endpoints', () => {
       expect(authTokenCookie).toBeDefined();
       expect(authTokenCookie).toContain('Expires=Thu, 01 Jan 1970');
     });
-
-    it('should block logout if auth token is missing', async () => {
-      const response = await request(app.getHttpServer()).post('/auth/logout').send();
-
-      expect(response.status).toBe(401);
-      expect(response.body).toBeDefined();
-      expect(response.body.message).toBeDefined();
-      expect(response.body.message).toBe('Access token is missing');
-      expect(response.body.timestamp).toBeDefined();
-      expect(response.body.status_code).toBeDefined();
-      expect(response.body.status_code).toBe(401);
-    });
-
-    it('should block logout if auth token is invalid', async () => {
-      const response = await request(app.getHttpServer())
-        .post('/auth/logout')
-        .set('Cookie', [`${process.env.AUTH_TOKEN_COOKIE_NAME}=${faker.string.alphanumeric(10)}`])
-        .send();
-
-      expect(response.status).toBe(401);
-      expect(response.body).toBeDefined();
-      expect(response.body.message).toBeDefined();
-      expect(response.body.message).toBe('Access token is invalid');
-      expect(response.body.timestamp).toBeDefined();
-      expect(response.body.status_code).toBeDefined();
-      expect(response.body.status_code).toBe(401);
-    });
-
-    it('should block logout if jwt token is expired', async () => {
-      const expiredToken = jwtTokenService.create(tokenPayload, JwtTokenType.EXPIRED);
-
-      const response = await request(app.getHttpServer())
-        .post('/auth/logout')
-        .set('Cookie', [`${process.env.AUTH_TOKEN_COOKIE_NAME}=${expiredToken}`])
-        .send();
-
-      expect(response.status).toBe(401);
-      expect(response.body).toBeDefined();
-      expect(response.body.message).toBeDefined();
-      expect(response.body.message).toBe('Access token is invalid');
-      expect(response.body.timestamp).toBeDefined();
-      expect(response.body.status_code).toBeDefined();
-      expect(response.body.status_code).toBe(401);
-    });
   });
 
   describe('GET /auth/user', () => {
