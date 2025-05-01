@@ -101,7 +101,7 @@ describe('Storage authentication endpoints', () => {
       expect(response.body.status_code).toBe(400);
     });
 
-    it(`should block request if jwt token is not sent in ${process.env.AUTH_TOKEN_COOKIE_NAME} cookie`, async () => {
+    it('should block request if jwt token is not sent in access token cookie', async () => {
       const body = {
         type: 'avatars',
         context: 'upload',

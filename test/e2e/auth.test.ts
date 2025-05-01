@@ -15,6 +15,8 @@ describe('Authentication endpoints', () => {
   let app: INestApplication<App>;
   let token: string = '';
   let jwtTokenService: JwtTokenService;
+  let existentUserToken: string = '';
+
   const user = {
     name: 'John Doe',
     username: 'john.doe',
@@ -95,6 +97,8 @@ describe('Authentication endpoints', () => {
       expect(authTokenCookie).toBeDefined();
       expect(authTokenCookie).toContain('HttpOnly');
       expect(authTokenCookie).toContain('SameSite=Strict');
+
+      existentUserToken = authTokenCookie?.split(';')[0].split('=')[1] as string;
     });
 
     it('should block the registration of a new user if email already exists', async () => {
@@ -278,6 +282,31 @@ describe('Authentication endpoints', () => {
       expect(response.body.timestamp).toBeDefined();
       expect(response.body.status_code).toBeDefined();
       expect(response.body.status_code).toBe(401);
+    });
+  });
+
+  describe('GET /auth/user', () => {
+    it('should logged user data if access token is valid', async () => {
+      const response = await request(app.getHttpServer())
+        .get('/auth/user')
+        .set('Cookie', [`${process.env.AUTH_TOKEN_COOKIE_NAME}=${existentUserToken}`]);
+
+      expect(response.status).toBe(200);
+      expect(response.body).toBeDefined();
+
+      expect(response.body.data.id).toBeDefined();
+      expect(response.body.data.name).toBeDefined();
+      expect(response.body.data.username).toBeDefined();
+      expect(response.body.data.email).toBeDefined();
+      expect(response.body.data.created_at).toBeDefined();
+      expect(response.body.data.updated_at).toBeDefined();
+      expect(response.body.data).toHaveProperty('avatar_url');
+      expect(response.body.data).toHaveProperty('bio');
+      expect(response.body.data).not.toHaveProperty('password');
+
+      expect(response.body.timestamp).toBeDefined();
+      expect(response.body.status_code).toBeDefined();
+      expect(response.body.status_code).toBe(200);
     });
   });
 

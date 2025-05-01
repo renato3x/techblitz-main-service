@@ -82,6 +82,23 @@ export class AuthService {
     };
   }
 
+  async validate(userId: string) {
+    const user = await this.prisma.user.findFirst({
+      where: {
+        id: userId,
+      },
+      omit: {
+        password: true,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    return user;
+  }
+
   async checkUsernameOrEmail({ field, value }: CheckUsernameEmailDto) {
     const isValidEmail = /^\S.+@.+\..+/gm;
 

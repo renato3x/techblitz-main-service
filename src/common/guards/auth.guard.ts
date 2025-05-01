@@ -31,6 +31,8 @@ export class AuthGuard implements CanActivate {
       if (decoded.iss !== process.env.JWT_ISSUER) {
         throw unauthorizedException;
       }
+
+      request.userToken = decoded;
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;

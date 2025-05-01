@@ -4,4 +4,5 @@ export type Claims = {
   exp: number;
   aud: string;
   iss: string;
+  sub: string;
 };

@@ -7,8 +7,9 @@ import { JwtTokenType } from '@/jwt-token/enums/jwt-token-type.enum';
 export class StorageAuthService {
   constructor(private readonly jwtTokenService: JwtTokenService) {}
 
-  createStorageToken(createStorageTokenDto: CreateStorageTokenDto) {
+  createStorageToken(createStorageTokenDto: CreateStorageTokenDto, userId: string) {
     const payload = {
+      sub: userId,
       scope: `${createStorageTokenDto.type}:${createStorageTokenDto.context}`,
     };
 

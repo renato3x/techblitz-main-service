@@ -1,11 +1,11 @@
-import { Body, Controller, HttpStatus, Post, HttpCode, Inject, Get, Query, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, HttpStatus, Post, HttpCode, Inject, Get, Query, Res, UseGuards, Req } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
 import { EVENT_EMITTER_SERVICE } from '@/event-emitter/event-emitter.constants';
 import { EventEmitter } from '@/event-emitter/interfaces/event-emitter.interface';
 import { CheckUsernameEmailDto } from './dto/check-username-email.dto';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { AuthGuard } from '@/common/guards/auth.guard';
 
 @Controller('auth')
@@ -62,6 +62,14 @@ export class AuthController {
     });
 
     return;
+  }
+
+  @Get('user')
+  @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.OK)
+  async validate(@Req() request: Request) {
+    const userId = request.userToken!.sub;
+    return await this.authService.validate(userId);
   }
 
   @Get('check')
