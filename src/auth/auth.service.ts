@@ -27,7 +27,6 @@ export class AuthService {
         password: hash,
       },
       omit: {
-        avatar_url: true,
         bio: true,
         password: true,
         updated_at: true,
@@ -52,11 +51,8 @@ export class AuthService {
         ...(loginUserDto.email ? { email: loginUserDto.email } : {}),
       },
       omit: {
-        created_at: true,
-        updated_at: true,
-        avatar_url: true,
         bio: true,
-        name: true,
+        updated_at: true,
       },
     });
 
@@ -76,7 +72,14 @@ export class AuthService {
       username: user.username,
     };
 
-    return this.jwtTokenService.create(payload, JwtTokenType.APP);
+    const { token, expiresIn } = this.jwtTokenService.create(payload, JwtTokenType.APP);
+    const { password: _password, ...userWithoutPassword } = user;
+
+    return {
+      user: userWithoutPassword,
+      token,
+      expiresIn,
+    };
   }
 
   async checkUsernameOrEmail({ field, value }: CheckUsernameEmailDto) {

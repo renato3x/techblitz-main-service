@@ -18,7 +18,7 @@ export class AuthController {
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
   async register(@Body() body: RegisterUserDto, @Res({ passthrough: true }) response: Response) {
-    const { token, user, expiresIn } = await this.authService.register(body);
+    const { user, token, expiresIn } = await this.authService.register(body);
     await this.eventEmitter.emit('user.registered', user);
 
     response.cookie(process.env.AUTH_TOKEN_COOKIE_NAME, token, {
@@ -28,20 +28,13 @@ export class AuthController {
       maxAge: expiresIn,
     });
 
-    return {
-      user: {
-        id: user.id,
-        name: user.name,
-        username: user.username,
-        email: user.email,
-      },
-    };
+    return { user };
   }
 
   @Post('login')
-  @HttpCode(HttpStatus.NO_CONTENT)
+  @HttpCode(HttpStatus.OK)
   async login(@Body() body: LoginUserDto, @Res({ passthrough: true }) response: Response) {
-    const { token, expiresIn } = await this.authService.login(body);
+    const { user, token, expiresIn } = await this.authService.login(body);
 
     response.cookie(process.env.AUTH_TOKEN_COOKIE_NAME, token, {
       httpOnly: true,
@@ -50,7 +43,7 @@ export class AuthController {
       maxAge: expiresIn,
     });
 
-    return;
+    return { user };
   }
 
   @Get('check')

@@ -40,14 +40,17 @@ describe('Authentication endpoints', () => {
       const response = await request(app.getHttpServer()).post('/auth/register').send(user);
 
       expect(response.status).toBe(201);
-
       expect(response.body).toBeDefined();
 
       expect(response.body.data).toBeDefined();
       expect(response.body.data.user).toBeDefined();
       expect(response.body.data.user.id).toBeDefined();
-      expect(response.body.data.user.email).toBeDefined();
+      expect(response.body.data.user.name).toBeDefined();
       expect(response.body.data.user.username).toBeDefined();
+      expect(response.body.data.user.email).toBeDefined();
+      expect(response.body.data.user.created_at).toBeDefined();
+      expect(response.body.data.user).toHaveProperty('avatar_url');
+      expect(response.body.data.user).not.toHaveProperty('password');
 
       expect(response.body.timestamp).toBeDefined();
       expect(response.body.status_code).toBeDefined();
@@ -114,9 +117,22 @@ describe('Authentication endpoints', () => {
 
       const response = await request(app.getHttpServer()).post('/auth/login').send(body);
 
-      expect(response.status).toBe(204);
+      expect(response.status).toBe(200);
       expect(response.body).toBeDefined();
-      expect(response.body).toEqual({});
+
+      expect(response.body.data).toBeDefined();
+      expect(response.body.data.user).toBeDefined();
+      expect(response.body.data.user.id).toBeDefined();
+      expect(response.body.data.user.name).toBeDefined();
+      expect(response.body.data.user.username).toBeDefined();
+      expect(response.body.data.user.email).toBeDefined();
+      expect(response.body.data.user.created_at).toBeDefined();
+      expect(response.body.data.user).toHaveProperty('avatar_url');
+      expect(response.body.data.user).not.toHaveProperty('password');
+
+      expect(response.body.timestamp).toBeDefined();
+      expect(response.body.status_code).toBeDefined();
+      expect(response.body.status_code).toBe(200);
 
       const cookies = response.headers['set-cookie'] as unknown as string[];
       expect(cookies).toBeDefined();
@@ -139,9 +155,22 @@ describe('Authentication endpoints', () => {
 
       const response = await request(app.getHttpServer()).post('/auth/login').send(body);
 
-      expect(response.status).toBe(204);
+      expect(response.status).toBe(200);
       expect(response.body).toBeDefined();
-      expect(response.body).toEqual({});
+
+      expect(response.body.data).toBeDefined();
+      expect(response.body.data.user).toBeDefined();
+      expect(response.body.data.user.id).toBeDefined();
+      expect(response.body.data.user.name).toBeDefined();
+      expect(response.body.data.user.username).toBeDefined();
+      expect(response.body.data.user.email).toBeDefined();
+      expect(response.body.data.user.created_at).toBeDefined();
+      expect(response.body.data.user).toHaveProperty('avatar_url');
+      expect(response.body.data.user).not.toHaveProperty('password');
+
+      expect(response.body.timestamp).toBeDefined();
+      expect(response.body.status_code).toBeDefined();
+      expect(response.body.status_code).toBe(200);
 
       const cookies = response.headers['set-cookie'] as unknown as string[];
       expect(cookies).toBeDefined();
