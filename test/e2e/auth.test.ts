@@ -113,6 +113,8 @@ describe('Authentication endpoints', () => {
 
       expect(response.status).toBe(400);
       expect(response.body).toBeDefined();
+      expect(response.body.error).toBeDefined();
+      expect(response.body.error).toBe('Bad Request');
       expect(response.body.message).toBeDefined();
       expect(response.body.message).toBe('Email already exists');
       expect(response.body.timestamp).toBeDefined();
@@ -132,6 +134,8 @@ describe('Authentication endpoints', () => {
 
       expect(response.status).toBe(400);
       expect(response.body).toBeDefined();
+      expect(response.body.error).toBeDefined();
+      expect(response.body.error).toBe('Bad Request');
       expect(response.body.message).toBeDefined();
       expect(response.body.message).toBe('Username already exists');
       expect(response.body.timestamp).toBeDefined();
@@ -272,6 +276,8 @@ describe('Authentication endpoints', () => {
 
       expect(response.status).toBe(400);
       expect(response.body).toBeDefined();
+      expect(response.body.error).toBeDefined();
+      expect(response.body.error).toBe('Bad Request');
       expect(response.body.message).toBeDefined();
       expect(response.body.message).toBe('Validation error');
       expect(response.body.errors).toContain('"field" is required');
@@ -285,6 +291,8 @@ describe('Authentication endpoints', () => {
 
       expect(response.status).toBe(400);
       expect(response.body).toBeDefined();
+      expect(response.body.error).toBeDefined();
+      expect(response.body.error).toBe('Bad Request');
       expect(response.body.message).toBeDefined();
       expect(response.body.message).toBe('Validation error');
       expect(response.body.errors).toContain('"value" is required');
@@ -402,6 +410,10 @@ describe('Authentication endpoints', () => {
       expect(response.status).toBe(400);
       expect(response.body).toBeDefined();
 
+      expect(response.body.error).toBeDefined();
+      expect(response.body.error).toBe('Bad Request');
+
+      expect(response.body.message).toBeDefined();
       expect(response.body.message).toBe('Informed email is not valid');
 
       expect(response.body.timestamp).toBeDefined();

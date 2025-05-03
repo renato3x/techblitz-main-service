@@ -73,6 +73,8 @@ describe('Storage authentication endpoints', () => {
 
       expect(response.status).toBe(400);
       expect(response.body).toBeDefined();
+      expect(response.body.error).toBeDefined();
+      expect(response.body.error).toBe('Bad Request');
       expect(response.body.message).toBeDefined();
       expect(response.body.message).toBe('Validation error');
       expect(response.body.errors).toContain('"type" is required');
@@ -93,6 +95,8 @@ describe('Storage authentication endpoints', () => {
 
       expect(response.status).toBe(400);
       expect(response.body).toBeDefined();
+      expect(response.body.error).toBeDefined();
+      expect(response.body.error).toBe('Bad Request');
       expect(response.body.message).toBeDefined();
       expect(response.body.message).toBe('Validation error');
       expect(response.body.errors).toContain('"context" is required');
@@ -111,6 +115,8 @@ describe('Storage authentication endpoints', () => {
 
       expect(response.status).toBe(401);
       expect(response.body).toBeDefined();
+      expect(response.body.error).toBeDefined();
+      expect(response.body.error).toBe('Unauthorized');
       expect(response.body.message).toBeDefined();
       expect(response.body.message).toBe('Access token is missing');
       expect(response.body.timestamp).toBeDefined();
@@ -131,6 +137,8 @@ describe('Storage authentication endpoints', () => {
 
       expect(response.status).toBe(401);
       expect(response.body).toBeDefined();
+      expect(response.body.error).toBeDefined();
+      expect(response.body.error).toBe('Unauthorized');
       expect(response.body.message).toBeDefined();
       expect(response.body.message).toBe('Access token is invalid');
       expect(response.body.timestamp).toBeDefined();
@@ -153,6 +161,8 @@ describe('Storage authentication endpoints', () => {
 
       expect(response.status).toBe(401);
       expect(response.body).toBeDefined();
+      expect(response.body.error).toBeDefined();
+      expect(response.body.error).toBe('Unauthorized');
       expect(response.body.message).toBeDefined();
       expect(response.body.message).toBe('Access token is invalid');
       expect(response.body.timestamp).toBeDefined();

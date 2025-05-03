@@ -14,6 +14,7 @@ export class ExceptionHandlerFilter<T extends Error> implements ExceptionFilter 
       const errors = exception.getZodError().errors.map((error) => error.message);
 
       response.status(statusCode).json({
+        error: 'Bad Request',
         message: 'Validation error',
         status_code: statusCode,
         errors,
@@ -39,6 +40,7 @@ export class ExceptionHandlerFilter<T extends Error> implements ExceptionFilter 
 
     const statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
     response.status(statusCode).json({
+      error: 'Internal Server Error',
       message: 'Internal server error',
       status_code: statusCode,
       timestamp,
