@@ -78,6 +78,8 @@ describe('Authentication endpoints', () => {
       expect(response.body.data.user.name).toBeDefined();
       expect(response.body.data.user.username).toBeDefined();
       expect(response.body.data.user.email).toBeDefined();
+      expect(response.body.data.user.role).toBeDefined();
+      expect(response.body.data.user.role).toBe('USER');
       expect(response.body.data.user.created_at).toBeDefined();
       expect(response.body.data.user).toHaveProperty('avatar_url');
       expect(response.body.data.user).not.toHaveProperty('password');
@@ -258,6 +260,8 @@ describe('Authentication endpoints', () => {
       expect(response.body.data.name).toBeDefined();
       expect(response.body.data.username).toBeDefined();
       expect(response.body.data.email).toBeDefined();
+      expect(response.body.data.role).toBeDefined();
+      expect(response.body.data.role).toBe('USER');
       expect(response.body.data.created_at).toBeDefined();
       expect(response.body.data.updated_at).toBeDefined();
       expect(response.body.data).toHaveProperty('avatar_url');

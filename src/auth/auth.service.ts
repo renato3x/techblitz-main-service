@@ -37,6 +37,7 @@ export class AuthService {
       sub: user.id,
       email: user.email,
       username: user.username,
+      scopes: [user.role],
     };
 
     const { token, expiresIn } = this.jwtTokenService.create(payload, JwtTokenType.APP);
@@ -70,6 +71,7 @@ export class AuthService {
       sub: user.id,
       email: user.email,
       username: user.username,
+      scopes: [user.role],
     };
 
     const { token, expiresIn } = this.jwtTokenService.create(payload, JwtTokenType.APP);
