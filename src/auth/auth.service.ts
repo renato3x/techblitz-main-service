@@ -27,6 +27,8 @@ export class AuthService {
         password: hash,
       },
       omit: {
+        total_followers: true,
+        total_following: true,
         bio: true,
         password: true,
         updated_at: true,
@@ -52,6 +54,8 @@ export class AuthService {
         ...(loginUserDto.email ? { email: loginUserDto.email } : {}),
       },
       omit: {
+        total_followers: true,
+        total_following: true,
         bio: true,
         updated_at: true,
       },
@@ -90,6 +94,8 @@ export class AuthService {
         id: userId,
       },
       omit: {
+        total_followers: true,
+        total_following: true,
         password: true,
       },
     });

@@ -12,16 +12,18 @@ enum Role {
 }
 
 model User {
-  id         String   @id @default(uuid())
-  name       String
-  username   String   @unique
-  email      String   @unique
-  password   String
-  bio        String?
-  avatar_url String?
-  role       Role    @default(USER)
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  id              String   @id @default(uuid())
+  name            String
+  username        String   @unique
+  email           String   @unique
+  password        String
+  bio             String?
+  avatar_url      String?
+  total_followers Int      @default(0)
+  total_following Int      @default(0)
+  role            Role     @default(USER)
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
 
   @@map("users")
 }
