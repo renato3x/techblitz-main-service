@@ -19,6 +19,7 @@ model User {
   password        String
   bio             String?
   avatar_url      String?
+  avatar_fallback String   @db.VarChar(2)
   total_followers Int      @default(0)
   total_following Int      @default(0)
   role            Role     @default(USER)

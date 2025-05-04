@@ -82,6 +82,7 @@ describe('Authentication endpoints', () => {
       expect(response.body.data.user.role).toBe('USER');
       expect(response.body.data.user.created_at).toBeDefined();
       expect(response.body.data.user).toHaveProperty('avatar_url');
+      expect(response.body.data.user).toHaveProperty('avatar_fallback');
       expect(response.body.data.user).not.toHaveProperty('password');
 
       expect(response.body.timestamp).toBeDefined();
@@ -166,6 +167,7 @@ describe('Authentication endpoints', () => {
       expect(response.body.data.user.email).toBeDefined();
       expect(response.body.data.user.created_at).toBeDefined();
       expect(response.body.data.user).toHaveProperty('avatar_url');
+      expect(response.body.data.user).toHaveProperty('avatar_fallback');
       expect(response.body.data.user).not.toHaveProperty('password');
 
       expect(response.body.timestamp).toBeDefined();
@@ -204,6 +206,7 @@ describe('Authentication endpoints', () => {
       expect(response.body.data.user.email).toBeDefined();
       expect(response.body.data.user.created_at).toBeDefined();
       expect(response.body.data.user).toHaveProperty('avatar_url');
+      expect(response.body.data.user).toHaveProperty('avatar_fallback');
       expect(response.body.data.user).not.toHaveProperty('password');
 
       expect(response.body.timestamp).toBeDefined();
@@ -265,6 +268,7 @@ describe('Authentication endpoints', () => {
       expect(response.body.data.created_at).toBeDefined();
       expect(response.body.data.updated_at).toBeDefined();
       expect(response.body.data).toHaveProperty('avatar_url');
+      expect(response.body.data).toHaveProperty('avatar_fallback');
       expect(response.body.data).toHaveProperty('bio');
       expect(response.body.data).not.toHaveProperty('password');
 

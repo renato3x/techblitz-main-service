@@ -24,6 +24,7 @@ export class AuthService {
     const user = await this.prisma.user.create({
       data: {
         ...registerUserDto,
+        avatar_fallback: this.createAvatarFallback(registerUserDto.name),
         password: hash,
       },
       omit: {
@@ -127,6 +128,19 @@ export class AuthService {
       value,
       valid: count === 0,
     };
+  }
+
+  private createAvatarFallback(name: string) {
+    const names = name.trim().split(' ');
+
+    if (names.length === 1) {
+      return names[0][0].toUpperCase();
+    }
+
+    const first = names[0][0].toUpperCase();
+    const last = names.at(-1)![0].toUpperCase();
+
+    return first + last;
   }
 
   private async throwErrorIfUserWithSameUsernameAlreadyExists(username: string) {

@@ -56,6 +56,7 @@ describe('Users endpoints', () => {
       expect(response.body.data.total_followers).not.toBeNaN();
       expect(response.body.data.total_following).not.toBeNaN();
       expect(response.body.data).toHaveProperty('avatar_url');
+      expect(response.body.data).toHaveProperty('avatar_fallback');
       expect(response.body.data).toHaveProperty('bio');
       expect(response.body.data).not.toHaveProperty('password');
 
