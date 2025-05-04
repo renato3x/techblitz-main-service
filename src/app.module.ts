@@ -17,6 +17,7 @@ import { StorageAuthModule } from './storage-auth/storage-auth.module';
 import { JwtTokenModule } from './jwt-token/jwt-token.module';
 import { AppLoggerModule } from './app-logger/app-logger.module';
 import { EventEmitterModule } from './event-emitter/event-emitter.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { EventEmitterModule } from './event-emitter/event-emitter.module';
     AuthModule,
     StorageAuthModule,
     JwtTokenModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [
