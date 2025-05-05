@@ -1,4 +1,17 @@
-import { Body, Controller, HttpStatus, Post, HttpCode, Inject, Get, Query, Res, UseGuards, Req } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpStatus,
+  Post,
+  HttpCode,
+  Inject,
+  Get,
+  Query,
+  Res,
+  UseGuards,
+  Req,
+  Patch,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
@@ -72,7 +85,7 @@ export class AuthController {
     return await this.authService.validate(userId);
   }
 
-  @Post('user')
+  @Patch('user')
   @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.OK)
   async update(@Req() request: Request, @Res({ passthrough: true }) response: Response, @Body() body: UpdateUserDto) {

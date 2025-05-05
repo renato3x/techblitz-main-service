@@ -430,7 +430,7 @@ describe('Authentication endpoints', () => {
     });
   });
 
-  describe('POST /auth/user', () => {
+  describe('PATCH /auth/user', () => {
     it('should update data from signed in user', async () => {
       const data = {
         name: 'Doe John',
@@ -440,7 +440,7 @@ describe('Authentication endpoints', () => {
       };
 
       const response = await request(app.getHttpServer())
-        .post('/auth/user')
+        .patch('/auth/user')
         .set('Cookie', [`${process.env.AUTH_TOKEN_COOKIE_NAME}=${existentUserToken}`])
         .send(data);
 
