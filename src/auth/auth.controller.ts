@@ -7,6 +7,7 @@ import { EventEmitter } from '@/event-emitter/interfaces/event-emitter.interface
 import { CheckUsernameEmailDto } from './dto/check-username-email.dto';
 import { Request, Response } from 'express';
 import { AuthGuard } from '@/common/guards/auth.guard';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -69,6 +70,24 @@ export class AuthController {
   async validate(@Req() request: Request) {
     const userId = request.userToken!.sub;
     return await this.authService.validate(userId);
+  }
+
+  @Post('user')
+  @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.OK)
+  async update(@Req() request: Request, @Res({ passthrough: true }) response: Response, @Body() body: UpdateUserDto) {
+    const userId = request.userToken!.sub;
+    const { user, token, expiresIn } = await this.authService.update(userId, body);
+
+    response.cookie(process.env.AUTH_TOKEN_COOKIE_NAME, token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: expiresIn,
+      path: '/',
+    });
+
+    return user;
   }
 
   @Get('check')

@@ -6,6 +6,7 @@ import { LoginUserDto } from './dto/login-user.dto';
 import { JwtTokenService } from '@/jwt-token/services/jwt-token.service';
 import { JwtTokenType } from '@/jwt-token/enums/jwt-token-type.enum';
 import { CheckUsernameEmailDto } from './dto/check-username-email.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -128,6 +129,53 @@ export class AuthService {
       value,
       valid: count === 0,
     };
+  }
+
+  async update(userId: string, updateUserDto: UpdateUserDto) {
+    const user = await this.prisma.user.findFirst({
+      where: {
+        id: userId,
+      },
+      omit: {
+        password: true,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    if (updateUserDto.email && updateUserDto.email !== user.email) {
+      await this.throwErrorIfUserWithSameEmailAlreadyExists(updateUserDto.email);
+    }
+
+    if (updateUserDto.username && updateUserDto.username !== user.username) {
+      await this.throwErrorIfUserWithSameUsernameAlreadyExists(updateUserDto.username);
+    }
+
+    const updatedUser = await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        ...updateUserDto,
+        avatar_fallback: updateUserDto.name ? this.createAvatarFallback(updateUserDto.name) : undefined,
+      },
+      omit: {
+        total_followers: true,
+        total_following: true,
+        password: true,
+      },
+    });
+
+    const payload = {
+      sub: updatedUser.id,
+      email: updatedUser.email,
+      username: updatedUser.username,
+      scopes: [updatedUser.role],
+    };
+
+    const { token, expiresIn } = this.jwtTokenService.create(payload, JwtTokenType.APP);
+
+    return { user: updatedUser, token, expiresIn };
   }
 
   private createAvatarFallback(name: string) {

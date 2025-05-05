@@ -429,4 +429,52 @@ describe('Authentication endpoints', () => {
       expect(response.body.status_code).toBe(400);
     });
   });
+
+  describe('POST /auth/user', () => {
+    it('should update data from signed in user', async () => {
+      const data = {
+        name: 'Doe John',
+        username: 'doe_john_586',
+        email: faker.internet.email().toLowerCase(),
+        bio: faker.lorem.paragraph(1).substring(0, 100),
+      };
+
+      const response = await request(app.getHttpServer())
+        .post('/auth/user')
+        .set('Cookie', [`${process.env.AUTH_TOKEN_COOKIE_NAME}=${existentUserToken}`])
+        .send(data);
+
+      expect(response.status).toBe(200);
+      expect(response.body).toBeDefined();
+
+      expect(response.body.data.id).toBeDefined();
+      expect(response.body.data.name).toBeDefined();
+      expect(response.body.data.username).toBeDefined();
+      expect(response.body.data.email).toBeDefined();
+      expect(response.body.data.role).toBeDefined();
+      expect(response.body.data.role).toBe('USER');
+      expect(response.body.data.created_at).toBeDefined();
+      expect(response.body.data.updated_at).toBeDefined();
+      expect(response.body.data).toHaveProperty('avatar_url');
+      expect(response.body.data).toHaveProperty('avatar_fallback');
+      expect(response.body.data).toHaveProperty('bio');
+      expect(response.body.data).not.toHaveProperty('password');
+
+      expect(response.body.timestamp).toBeDefined();
+      expect(response.body.status_code).toBeDefined();
+      expect(response.body.status_code).toBe(200);
+
+      const cookies = response.headers['set-cookie'] as unknown as string[];
+      expect(cookies).toBeDefined();
+      expect(Array.isArray(cookies)).toBe(true);
+
+      const authTokenCookie = cookies.find((cookie: string) =>
+        cookie.startsWith(`${process.env.AUTH_TOKEN_COOKIE_NAME}=`),
+      );
+
+      expect(authTokenCookie).toBeDefined();
+      expect(authTokenCookie).toContain('HttpOnly');
+      expect(authTokenCookie).toContain('SameSite=Strict');
+    });
+  });
 });
