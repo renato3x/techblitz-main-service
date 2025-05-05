@@ -20,7 +20,7 @@ export class StorageAuthController {
     response.cookie(process.env.STORAGE_AUTH_TOKEN_COOKIE_NAME, token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'none',
+      sameSite: false,
       maxAge: expiresIn,
       path: '/',
     });

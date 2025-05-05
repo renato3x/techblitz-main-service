@@ -195,7 +195,7 @@ describe('Storage authentication endpoints', () => {
 
       expect(authTokenCookie).toBeDefined();
       expect(authTokenCookie).toContain('HttpOnly');
-      expect(authTokenCookie).toContain('SameSite=None');
+      expect(authTokenCookie).not.toContain('SameSite');
     });
 
     it('should return an avatar delete jwt token', async () => {
@@ -223,7 +223,7 @@ describe('Storage authentication endpoints', () => {
 
       expect(authTokenCookie).toBeDefined();
       expect(authTokenCookie).toContain('HttpOnly');
-      expect(authTokenCookie).toContain('SameSite=None');
+      expect(authTokenCookie).not.toContain('SameSite');
     });
   });
 });
