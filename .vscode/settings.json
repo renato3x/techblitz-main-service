@@ -1,6 +1,8 @@
 {
   "cSpell.words": [
+    "autoincrement",
     "datasource",
+    "luxon",
     "nestjs",
     "postgresql",
     "techblitz",

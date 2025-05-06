@@ -10,12 +10,17 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule } from '@nestjs/config';
 import { JwtTokenService } from '@/jwt-token/services/jwt-token.service';
 import { JwtTokenType } from '@/jwt-token/enums/jwt-token-type.enum';
+import { PrismaService } from '@/common/services/prisma.service';
+import { CommonModule } from '@/common/common.module';
 
 describe('Authentication endpoints', () => {
   let app: INestApplication<App>;
-  let token: string = '';
+  let prisma: PrismaService;
   let jwtTokenService: JwtTokenService;
+  let token: string = '';
   let existentUserToken: string = '';
+  let existentUserId: string = '';
+  let existentUserEmail: string = '';
 
   const user = {
     name: 'John Doe',
@@ -41,12 +46,14 @@ describe('Authentication endpoints', () => {
             issuer: process.env.JWT_ISSUER,
           },
         }),
+        CommonModule,
         ConfigModule.forRoot({ isGlobal: true }),
       ],
       providers: [JwtTokenService],
     }).compile();
 
     jwtTokenService = module.get(JwtTokenService);
+    prisma = module.get(PrismaService);
     token = jwtTokenService.create(tokenPayload, JwtTokenType.APP).token;
   }, 30000);
 
@@ -102,6 +109,7 @@ describe('Authentication endpoints', () => {
       expect(authTokenCookie).toContain('SameSite=Strict');
 
       existentUserToken = authTokenCookie?.split(';')[0].split('=')[1] as string;
+      existentUserId = response.body.data.user.id;
     });
 
     it('should block the registration of a new user if email already exists', async () => {
@@ -439,6 +447,8 @@ describe('Authentication endpoints', () => {
         bio: faker.lorem.paragraph(1).substring(0, 100),
       };
 
+      existentUserEmail = data.email;
+
       const response = await request(app.getHttpServer())
         .patch('/auth/user')
         .set('Cookie', [`${process.env.AUTH_TOKEN_COOKIE_NAME}=${existentUserToken}`])
@@ -538,6 +548,56 @@ describe('Authentication endpoints', () => {
 
       expect(response.status).toBe(204);
       expect(response.body).toEqual({});
+    });
+  });
+
+  describe('POST /auth/forgot-password', () => {
+    it('should create a recovery token for a valid user email', async () => {
+      const response = await request(app.getHttpServer())
+        .post('/auth/forgot-password')
+        .send({ email: existentUserEmail });
+
+      expect(response.status).toBe(204);
+      expect(response.body).toEqual({});
+
+      expect(prisma.accountRecoveryToken).toBeDefined();
+
+      const token = await prisma?.accountRecoveryToken?.findFirst({
+        where: { user_id: existentUserId },
+      });
+
+      expect(token).toBeDefined();
+      expect(token!.token).toBeDefined();
+      expect(new Date(token!.expires_at).getTime()).toBeGreaterThan(Date.now());
+    });
+
+    it('should return an error if email is not registered', async () => {
+      const response = await request(app.getHttpServer())
+        .post('/auth/forgot-password')
+        .send({ email: 'nonexistent@example.com' });
+
+      expect(response.status).toBe(404);
+      expect(response.body).toBeDefined();
+      expect(response.body.error).toBe('Not Found');
+      expect(response.body.message).toBe('User not found');
+      expect(response.body.timestamp).toBeDefined();
+      expect(response.body.status_code).toBe(404);
+    });
+
+    it('should return an error if email is not valid', async () => {
+      const response = await request(app.getHttpServer())
+        .post('/auth/forgot-password')
+        .send({ email: 'invalid-email-format' });
+
+      expect(response.status).toBe(400);
+      expect(response.body).toBeDefined();
+      expect(response.body.error).toBe('Bad Request');
+      expect(response.body.message).toBeDefined();
+      expect(response.body.message).toBe('Validation error');
+      expect(response.body.errors).toBeDefined();
+      expect(response.body.errors).toContain('"email" is required');
+      expect(response.body.timestamp).toBeDefined();
+      expect(response.body.status_code).toBeDefined();
     });
   });
 });

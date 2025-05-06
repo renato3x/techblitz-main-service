@@ -14,6 +14,8 @@ import { JwtTokenType } from '@/jwt-token/enums/jwt-token-type.enum';
 import { CheckUsernameEmailDto } from './dto/check-username-email.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
+import { CreateAccountRecoveryTokenDto } from './dto/create-account-recovery-token.dto';
+import { DateTime } from 'luxon';
 
 @Injectable()
 export class AuthService {
@@ -206,12 +208,47 @@ export class AuthService {
       throw new ForbiddenException('New password must be different from current password');
     }
 
-    await this.prisma.user.update({
+    return await this.prisma.user.update({
       where: {
         id: userId,
       },
       data: {
         password: this.passwordService.hash(new_password),
+      },
+      select: {
+        email: true,
+        username: true,
+        updated_at: true,
+      },
+    });
+  }
+
+  async createAccountRecoveryToken({ email }: CreateAccountRecoveryTokenDto) {
+    const user = await this.prisma.user.findFirst({
+      where: { email },
+      select: {
+        id: true,
+        email: true,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    return await this.prisma.accountRecoveryToken.create({
+      data: {
+        user_id: user.id,
+        expires_at: DateTime.utc().plus({ minutes: 15 }).toJSDate(),
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            username: true,
+            email: true,
+          },
+        },
       },
     });
   }

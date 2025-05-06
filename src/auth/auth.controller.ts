@@ -22,6 +22,7 @@ import { Request, Response } from 'express';
 import { AuthGuard } from '@/common/guards/auth.guard';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
+import { CreateAccountRecoveryTokenDto } from './dto/create-account-recovery-token.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -101,6 +102,12 @@ export class AuthController {
       path: '/',
     });
 
+    await this.eventEmitter.emit('user.updated', {
+      email: user.email,
+      username: user.username,
+      updated_at: user.updated_at,
+    });
+
     return user;
   }
 
@@ -109,7 +116,15 @@ export class AuthController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async changePassword(@Req() request: Request, @Body() body: ChangePasswordDto) {
     const userId = request.userToken!.sub;
-    await this.authService.changePassword(userId, body);
+    const user = await this.authService.changePassword(userId, body);
+    await this.eventEmitter.emit('user.password-updated', user);
+  }
+
+  @Post('forgot-password')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async createAccountRecoveryToken(@Body() body: CreateAccountRecoveryTokenDto) {
+    const token = await this.authService.createAccountRecoveryToken(body);
+    await this.eventEmitter.emit('user.account_recovery', token);
   }
 
   @Get('check')
