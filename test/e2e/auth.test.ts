@@ -477,4 +477,67 @@ describe('Authentication endpoints', () => {
       expect(authTokenCookie).toContain('SameSite=Strict');
     });
   });
+
+  describe('POST /auth/change-password', () => {
+    it('should block change password if "old_password" is different from current password', async () => {
+      const body = {
+        old_password: faker.internet.password({ length: 20 }),
+        new_password: faker.internet.password({ length: 10 }),
+      };
+
+      const response = await request(app.getHttpServer())
+        .post('/auth/change-password')
+        .set('Cookie', `${process.env.AUTH_TOKEN_COOKIE_NAME}=${existentUserToken}`)
+        .send(body);
+
+      expect(response.status).toBe(403);
+      expect(response.body).toBeDefined();
+
+      expect(response.body.error).toBeDefined();
+      expect(response.body.error).toBe('Forbidden');
+      expect(response.body.message).toBe('Current password is incorrect');
+
+      expect(response.body.timestamp).toBeDefined();
+      expect(response.body.status_code).toBeDefined();
+      expect(response.body.status_code).toBe(403);
+    });
+
+    it('should block change password if "new_password" is equals from current password', async () => {
+      const body = {
+        old_password: user.password,
+        new_password: user.password,
+      };
+
+      const response = await request(app.getHttpServer())
+        .post('/auth/change-password')
+        .set('Cookie', `${process.env.AUTH_TOKEN_COOKIE_NAME}=${existentUserToken}`)
+        .send(body);
+
+      expect(response.status).toBe(403);
+      expect(response.body).toBeDefined();
+
+      expect(response.body.error).toBeDefined();
+      expect(response.body.error).toBe('Forbidden');
+      expect(response.body.message).toBe('New password must be different from current password');
+
+      expect(response.body.timestamp).toBeDefined();
+      expect(response.body.status_code).toBeDefined();
+      expect(response.body.status_code).toBe(403);
+    });
+
+    it('should change user password', async () => {
+      const body = {
+        old_password: user.password,
+        new_password: faker.internet.password({ length: 10 }),
+      };
+
+      const response = await request(app.getHttpServer())
+        .post('/auth/change-password')
+        .set('Cookie', `${process.env.AUTH_TOKEN_COOKIE_NAME}=${existentUserToken}`)
+        .send(body);
+
+      expect(response.status).toBe(204);
+      expect(response.body).toEqual({});
+    });
+  });
 });

@@ -1,4 +1,10 @@
-import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { PrismaService } from '@/common/services/prisma.service';
 import { PasswordService } from '@/common/services/password.service';
@@ -7,6 +13,7 @@ import { JwtTokenService } from '@/jwt-token/services/jwt-token.service';
 import { JwtTokenType } from '@/jwt-token/enums/jwt-token-type.enum';
 import { CheckUsernameEmailDto } from './dto/check-username-email.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
 
 @Injectable()
 export class AuthService {
@@ -176,6 +183,37 @@ export class AuthService {
     const { token, expiresIn } = this.jwtTokenService.create(payload, JwtTokenType.APP);
 
     return { user: updatedUser, token, expiresIn };
+  }
+
+  async changePassword(userId: string, { old_password, new_password }: ChangePasswordDto) {
+    const user = await this.prisma.user.findFirst({
+      where: {
+        id: userId,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const isOldPasswordEqualsFromCurrentPassword = this.passwordService.compare(old_password, user.password);
+
+    if (!isOldPasswordEqualsFromCurrentPassword) {
+      throw new ForbiddenException('Current password is incorrect');
+    }
+
+    if (new_password === old_password) {
+      throw new ForbiddenException('New password must be different from current password');
+    }
+
+    await this.prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        password: this.passwordService.hash(new_password),
+      },
+    });
   }
 
   private createAvatarFallback(name: string) {

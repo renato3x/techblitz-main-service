@@ -21,6 +21,7 @@ import { CheckUsernameEmailDto } from './dto/check-username-email.dto';
 import { Request, Response } from 'express';
 import { AuthGuard } from '@/common/guards/auth.guard';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -101,6 +102,14 @@ export class AuthController {
     });
 
     return user;
+  }
+
+  @Post('change-password')
+  @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async changePassword(@Req() request: Request, @Body() body: ChangePasswordDto) {
+    const userId = request.userToken!.sub;
+    await this.authService.changePassword(userId, body);
   }
 
   @Get('check')
