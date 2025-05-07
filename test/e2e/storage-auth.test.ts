@@ -10,11 +10,13 @@ import { faker } from '@faker-js/faker';
 import { createContainers, closeContainers } from '@test/helpers';
 import { JwtTokenService } from '@/jwt-token/services/jwt-token.service';
 import { JwtTokenType } from '@/jwt-token/enums/jwt-token-type.enum';
+import { StartedTestContainer } from 'testcontainers';
 
 describe('Storage authentication endpoints', () => {
   let app: INestApplication<App>;
   let token: string = '';
   let jwtTokenService: JwtTokenService;
+  let containers: StartedTestContainer[] = [];
 
   const tokenPayload = {
     sub: faker.string.uuid(),
@@ -23,11 +25,10 @@ describe('Storage authentication endpoints', () => {
   };
 
   beforeAll(async () => {
-    await createContainers();
+    containers = await createContainers();
   }, 30000);
 
-  beforeEach(async () => {
-    await app?.close();
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
@@ -57,7 +58,8 @@ describe('Storage authentication endpoints', () => {
   });
 
   afterAll(async () => {
-    await closeContainers();
+    await app?.close();
+    await closeContainers(containers);
   });
 
   describe('POST /storage', () => {

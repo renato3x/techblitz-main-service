@@ -6,6 +6,7 @@ import cookieParser from 'cookie-parser';
 import { App } from 'supertest/types';
 import request from 'supertest';
 import { faker } from '@faker-js/faker';
+import { StartedTestContainer } from 'testcontainers';
 
 describe('Users endpoints', () => {
   let app: INestApplication<App>;
@@ -15,12 +16,13 @@ describe('Users endpoints', () => {
     email: 'john.doe@helloworld.com',
     password: faker.internet.password({ length: 10 }),
   };
+  let containers: StartedTestContainer[] = [];
 
   beforeAll(async () => {
-    await createContainers();
+    containers = await createContainers();
   }, 30000);
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     await app?.close();
     const module: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
@@ -32,7 +34,8 @@ describe('Users endpoints', () => {
   });
 
   afterAll(async () => {
-    await closeContainers();
+    await app.close();
+    await closeContainers(containers);
   });
 
   describe('GET users/:username', () => {
