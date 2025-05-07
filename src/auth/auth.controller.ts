@@ -23,6 +23,7 @@ import { AuthGuard } from '@/common/guards/auth.guard';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { CreateAccountRecoveryTokenDto } from './dto/create-account-recovery-token.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -118,6 +119,13 @@ export class AuthController {
     const userId = request.userToken!.sub;
     const user = await this.authService.changePassword(userId, body);
     await this.eventEmitter.emit('user.password-updated', user);
+  }
+
+  @Post('reset-password')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async resetPassword(@Body() body: ResetPasswordDto) {
+    const user = await this.authService.resetPassword(body);
+    await this.eventEmitter.emit('user.password-reset', user);
   }
 
   @Post('forgot-password')

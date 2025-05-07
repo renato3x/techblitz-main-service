@@ -16,6 +16,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { CreateAccountRecoveryTokenDto } from './dto/create-account-recovery-token.dto';
 import { DateTime } from 'luxon';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 
 @Injectable()
 export class AuthService {
@@ -251,6 +252,62 @@ export class AuthService {
         },
       },
     });
+  }
+
+  async resetPassword({ token, password }: ResetPasswordDto) {
+    const accountRecoveryToken = await this.prisma.accountRecoveryToken.findFirst({
+      where: {
+        token,
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            password: true,
+          },
+        },
+      },
+    });
+
+    if (!accountRecoveryToken) {
+      throw new BadRequestException('Token is not valid');
+    }
+
+    const expiresAt = DateTime.fromJSDate(accountRecoveryToken.expires_at);
+    const now = DateTime.utc();
+    const isTokenExpired = now.diff(expiresAt, 'minutes').minutes >= 15;
+
+    if (isTokenExpired) {
+      throw new BadRequestException('Token has expired');
+    }
+
+    const isNewPasswordEqualFromCurrentPassword = this.passwordService.compare(
+      password,
+      accountRecoveryToken.user.password,
+    );
+
+    if (isNewPasswordEqualFromCurrentPassword) {
+      throw new BadRequestException('New password must be different from current password');
+    }
+
+    const [user] = await this.prisma.$transaction([
+      this.prisma.user.update({
+        where: { id: accountRecoveryToken.user_id },
+        data: {
+          password: this.passwordService.hash(password),
+        },
+        select: {
+          username: true,
+          email: true,
+          updated_at: true,
+        },
+      }),
+      this.prisma.accountRecoveryToken.delete({
+        where: { id: accountRecoveryToken.id },
+      }),
+    ]);
+
+    return user;
   }
 
   private createAvatarFallback(name: string) {
