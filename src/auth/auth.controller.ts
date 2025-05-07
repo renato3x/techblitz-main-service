@@ -132,7 +132,7 @@ export class AuthController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async createAccountRecoveryToken(@Body() body: CreateAccountRecoveryTokenDto) {
     const token = await this.authService.createAccountRecoveryToken(body);
-    await this.eventEmitter.emit('user.account_recovery', token);
+    await this.eventEmitter.emit('user.account-recovery', token);
   }
 
   @Get('check')
