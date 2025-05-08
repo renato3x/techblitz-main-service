@@ -278,6 +278,10 @@ export class AuthService {
     const isTokenExpired = now.diff(expiresAt, 'minutes').minutes >= 15;
 
     if (isTokenExpired) {
+      await this.prisma.accountRecoveryToken.delete({
+        where: { id: accountRecoveryToken.id },
+      });
+
       throw new BadRequestException('Token has expired');
     }
 

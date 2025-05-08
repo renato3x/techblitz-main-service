@@ -1,5 +1,5 @@
 import { INestApplication } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client/extension';
+import { PrismaClient } from '@prisma/client';
 import { closeContainers, createAccountRecoveryToken, createContainers, createUser } from '@test/helpers';
 import { App } from 'supertest/types';
 import { DateTime } from 'luxon';
@@ -201,5 +201,11 @@ describe('POST /auth/reset-password', () => {
     expect(response.body.timestamp).toBeDefined();
     expect(response.body.status_code).toBeDefined();
     expect(response.body.status_code).toBe(400);
+
+    const token = await prisma.accountRecoveryToken.findFirst({
+      where: { id: expiredToken.id },
+    });
+
+    expect(token).toBeNull();
   });
 });
