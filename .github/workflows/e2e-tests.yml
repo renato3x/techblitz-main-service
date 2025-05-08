@@ -25,6 +25,7 @@ jobs:
       NODE_ENV: development
       AUTH_TOKEN_COOKIE_NAME: auth_token
       STORAGE_AUTH_TOKEN_COOKIE_NAME: storage_auth_token
+      ACCOUNT_RECOVERY_TOKEN_TTL_IN_MINUTES: 15
 
     steps:
       - name: Checkout repository
