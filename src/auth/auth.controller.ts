@@ -122,10 +122,11 @@ export class AuthController {
   }
 
   @Post('forgot-password')
-  @HttpCode(HttpStatus.NO_CONTENT)
+  @HttpCode(HttpStatus.CREATED)
   async createAccountRecoveryToken(@Body() body: CreateAccountRecoveryTokenDto) {
-    const token = await this.authService.createAccountRecoveryToken(body);
+    const { token, expiration_time_in_millis } = await this.authService.createAccountRecoveryToken(body);
     await this.eventEmitter.emit('user.account-recovery', token);
+    return { expiration_time_in_millis };
   }
 
   @Post('reset-password')

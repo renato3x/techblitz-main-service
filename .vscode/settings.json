@@ -3,6 +3,8 @@
     "autoincrement",
     "datasource",
     "luxon",
+    "millis",
+    "Millis",
     "nestjs",
     "postgresql",
     "somestrongpassword",

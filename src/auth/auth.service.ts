@@ -238,11 +238,11 @@ export class AuthService {
     }
 
     const expirationTimeInMinutes = +process.env.ACCOUNT_RECOVERY_TOKEN_TTL_IN_MINUTES;
-
-    return await this.prisma.accountRecoveryToken.create({
+    const expiresAt = DateTime.utc().plus({ minutes: expirationTimeInMinutes });
+    const token = await this.prisma.accountRecoveryToken.create({
       data: {
         user_id: user.id,
-        expires_at: DateTime.utc().plus({ minutes: expirationTimeInMinutes }).toJSDate(),
+        expires_at: expiresAt.toJSDate(),
       },
       include: {
         user: {
@@ -254,6 +254,11 @@ export class AuthService {
         },
       },
     });
+
+    return {
+      token,
+      expiration_time_in_millis: expiresAt.toMillis(),
+    };
   }
 
   async resetPassword({ token, password }: ResetPasswordDto) {

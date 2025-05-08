@@ -48,8 +48,9 @@ describe('/auth/forgot-password', () => {
     it('should create a recovery token for a valid user email', async () => {
       const response = await request(app.getHttpServer()).post('/auth/forgot-password').send({ email: user.email });
 
-      expect(response.status).toBe(204);
-      expect(response.body).toEqual({});
+      expect(response.status).toBe(201);
+      expect(response.body).toBeDefined();
+      expect(response.body.data.expiration_time_in_millis).toBeDefined();
 
       expect(prisma.accountRecoveryToken).toBeDefined();
 
