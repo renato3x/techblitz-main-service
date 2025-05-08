@@ -12,7 +12,7 @@ import { JwtTokenService } from '@/jwt-token/services/jwt-token.service';
 import { JwtTokenType } from '@/jwt-token/enums/jwt-token-type.enum';
 import { StartedTestContainer } from 'testcontainers';
 
-describe('Storage authentication endpoints', () => {
+describe('/storage', () => {
   let app: INestApplication<App>;
   let token: string = '';
   let jwtTokenService: JwtTokenService;
@@ -62,7 +62,7 @@ describe('Storage authentication endpoints', () => {
     await closeContainers(containers);
   });
 
-  describe('POST /storage', () => {
+  describe('POST', () => {
     it('should block request if option "type" is not sent within the body', async () => {
       const body = {
         context: 'upload',

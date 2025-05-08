@@ -13,7 +13,7 @@ import cookieParser from 'cookie-parser';
 import request from 'supertest';
 import { StartedTestContainer } from 'testcontainers';
 
-describe('POST /auth/logout', () => {
+describe('/auth/logout', () => {
   let app: INestApplication<App>;
   let token: string = '';
   let containers: StartedTestContainer[] = [];
@@ -60,24 +60,26 @@ describe('POST /auth/logout', () => {
     await closeContainers(containers);
   });
 
-  it('should logout user removing auth token cookie', async () => {
-    const response = await request(app.getHttpServer())
-      .post('/auth/logout')
-      .set('Cookie', [`${process.env.AUTH_TOKEN_COOKIE_NAME}=${token}`])
-      .send();
+  describe('POST', () => {
+    it('should logout user removing auth token cookie', async () => {
+      const response = await request(app.getHttpServer())
+        .post('/auth/logout')
+        .set('Cookie', [`${process.env.AUTH_TOKEN_COOKIE_NAME}=${token}`])
+        .send();
 
-    expect(response.status).toBe(204);
-    expect(response.body).toEqual({});
+      expect(response.status).toBe(204);
+      expect(response.body).toEqual({});
 
-    const cookies = response.headers['set-cookie'] as unknown as string[];
-    expect(cookies).toBeDefined();
-    expect(Array.isArray(cookies)).toBe(true);
+      const cookies = response.headers['set-cookie'] as unknown as string[];
+      expect(cookies).toBeDefined();
+      expect(Array.isArray(cookies)).toBe(true);
 
-    const authTokenCookie = cookies.find((cookie: string) =>
-      cookie.startsWith(`${process.env.AUTH_TOKEN_COOKIE_NAME}=`),
-    );
+      const authTokenCookie = cookies.find((cookie: string) =>
+        cookie.startsWith(`${process.env.AUTH_TOKEN_COOKIE_NAME}=`),
+      );
 
-    expect(authTokenCookie).toBeDefined();
-    expect(authTokenCookie).toContain('Expires=Thu, 01 Jan 1970');
+      expect(authTokenCookie).toBeDefined();
+      expect(authTokenCookie).toContain('Expires=Thu, 01 Jan 1970');
+    });
   });
 });

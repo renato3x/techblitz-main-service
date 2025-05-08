@@ -12,7 +12,7 @@ import cookieParser from 'cookie-parser';
 import request from 'supertest';
 import { StartedTestContainer } from 'testcontainers';
 
-describe('POST /auth/forgot-password', () => {
+describe('/auth/forgot-password', () => {
   let app: INestApplication<App>;
   let prisma: PrismaClient;
   let user: Awaited<ReturnType<typeof createUser>>;
@@ -44,49 +44,51 @@ describe('POST /auth/forgot-password', () => {
     await closeContainers(containers);
   });
 
-  it('should create a recovery token for a valid user email', async () => {
-    const response = await request(app.getHttpServer()).post('/auth/forgot-password').send({ email: user.email });
+  describe('POST', () => {
+    it('should create a recovery token for a valid user email', async () => {
+      const response = await request(app.getHttpServer()).post('/auth/forgot-password').send({ email: user.email });
 
-    expect(response.status).toBe(204);
-    expect(response.body).toEqual({});
+      expect(response.status).toBe(204);
+      expect(response.body).toEqual({});
 
-    expect(prisma.accountRecoveryToken).toBeDefined();
+      expect(prisma.accountRecoveryToken).toBeDefined();
 
-    const token = await prisma?.accountRecoveryToken?.findFirst({
-      where: { user_id: user.id },
+      const token = await prisma?.accountRecoveryToken?.findFirst({
+        where: { user_id: user.id },
+      });
+
+      expect(token).toBeDefined();
+      expect(token!.token).toBeDefined();
+      expect(new Date(token!.expires_at).getTime()).toBeGreaterThan(Date.now());
     });
 
-    expect(token).toBeDefined();
-    expect(token!.token).toBeDefined();
-    expect(new Date(token!.expires_at).getTime()).toBeGreaterThan(Date.now());
-  });
+    it('should return an error if email is not registered', async () => {
+      const response = await request(app.getHttpServer())
+        .post('/auth/forgot-password')
+        .send({ email: 'nonexistent@example.com' });
 
-  it('should return an error if email is not registered', async () => {
-    const response = await request(app.getHttpServer())
-      .post('/auth/forgot-password')
-      .send({ email: 'nonexistent@example.com' });
+      expect(response.status).toBe(404);
+      expect(response.body).toBeDefined();
+      expect(response.body.error).toBe('Not Found');
+      expect(response.body.message).toBe('User not found');
+      expect(response.body.timestamp).toBeDefined();
+      expect(response.body.status_code).toBe(404);
+    });
 
-    expect(response.status).toBe(404);
-    expect(response.body).toBeDefined();
-    expect(response.body.error).toBe('Not Found');
-    expect(response.body.message).toBe('User not found');
-    expect(response.body.timestamp).toBeDefined();
-    expect(response.body.status_code).toBe(404);
-  });
+    it('should return an error if email is not valid', async () => {
+      const response = await request(app.getHttpServer())
+        .post('/auth/forgot-password')
+        .send({ email: 'invalid-email-format' });
 
-  it('should return an error if email is not valid', async () => {
-    const response = await request(app.getHttpServer())
-      .post('/auth/forgot-password')
-      .send({ email: 'invalid-email-format' });
-
-    expect(response.status).toBe(400);
-    expect(response.body).toBeDefined();
-    expect(response.body.error).toBe('Bad Request');
-    expect(response.body.message).toBeDefined();
-    expect(response.body.message).toBe('Validation error');
-    expect(response.body.errors).toBeDefined();
-    expect(response.body.errors).toContain('"email" is required');
-    expect(response.body.timestamp).toBeDefined();
-    expect(response.body.status_code).toBeDefined();
+      expect(response.status).toBe(400);
+      expect(response.body).toBeDefined();
+      expect(response.body.error).toBe('Bad Request');
+      expect(response.body.message).toBeDefined();
+      expect(response.body.message).toBe('Validation error');
+      expect(response.body.errors).toBeDefined();
+      expect(response.body.errors).toContain('"email" is required');
+      expect(response.body.timestamp).toBeDefined();
+      expect(response.body.status_code).toBeDefined();
+    });
   });
 });
