@@ -181,7 +181,10 @@ describe('POST /auth/reset-password', () => {
   });
 
   it('should return an error if token has expired', async () => {
-    const expiredDate = DateTime.utc().minus({ minutes: 30 }).toJSDate();
+    const expirationTimeInMinutes = +process.env.ACCOUNT_RECOVERY_TOKEN_TTL_IN_MINUTES;
+    const expiredDate = DateTime.utc()
+      .minus({ minutes: expirationTimeInMinutes * 2 })
+      .toJSDate();
     const expiredToken = await prisma.accountRecoveryToken.create({
       data: {
         user_id: user.id,

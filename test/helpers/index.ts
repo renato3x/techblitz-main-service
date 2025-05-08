@@ -68,10 +68,12 @@ export async function createUser(prisma: PrismaClient, passwordService: Password
 }
 
 export async function createAccountRecoveryToken(prisma: PrismaClient, userId: string) {
+  const expirationTimeInMinutes = +process.env.ACCOUNT_RECOVERY_TOKEN_TTL_IN_MINUTES;
+
   const token = await prisma.accountRecoveryToken.create({
     data: {
       user_id: userId,
-      expires_at: DateTime.utc().plus({ minutes: 15 }).toJSDate(),
+      expires_at: DateTime.utc().plus({ minutes: expirationTimeInMinutes }).toJSDate(),
     },
   });
 

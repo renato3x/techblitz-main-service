@@ -237,10 +237,12 @@ export class AuthService {
       throw new NotFoundException('User not found');
     }
 
+    const expirationTimeInMinutes = +process.env.ACCOUNT_RECOVERY_TOKEN_TTL_IN_MINUTES;
+
     return await this.prisma.accountRecoveryToken.create({
       data: {
         user_id: user.id,
-        expires_at: DateTime.utc().plus({ minutes: 15 }).toJSDate(),
+        expires_at: DateTime.utc().plus({ minutes: expirationTimeInMinutes }).toJSDate(),
       },
       include: {
         user: {
