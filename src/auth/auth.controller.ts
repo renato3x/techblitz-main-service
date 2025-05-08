@@ -121,18 +121,18 @@ export class AuthController {
     await this.eventEmitter.emit('user.password-updated', user);
   }
 
-  @Post('reset-password')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  async resetPassword(@Body() body: ResetPasswordDto) {
-    const user = await this.authService.resetPassword(body);
-    await this.eventEmitter.emit('user.password-reset', user);
-  }
-
   @Post('forgot-password')
   @HttpCode(HttpStatus.NO_CONTENT)
   async createAccountRecoveryToken(@Body() body: CreateAccountRecoveryTokenDto) {
     const token = await this.authService.createAccountRecoveryToken(body);
     await this.eventEmitter.emit('user.account-recovery', token);
+  }
+
+  @Post('reset-password')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async resetPassword(@Body() body: ResetPasswordDto) {
+    const user = await this.authService.resetPassword(body);
+    await this.eventEmitter.emit('user.password-reset', user);
   }
 
   @Get('check')
