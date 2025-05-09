@@ -50,7 +50,7 @@ describe('/auth/forgot-password', () => {
 
       expect(response.status).toBe(201);
       expect(response.body).toBeDefined();
-      expect(response.body.data.expiration_time_in_millis).toBeDefined();
+      expect(response.body.data.expiration_date_in_millis).toBeDefined();
 
       expect(prisma.accountRecoveryToken).toBeDefined();
 

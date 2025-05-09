@@ -257,7 +257,7 @@ export class AuthService {
 
     return {
       token,
-      expiration_time_in_millis: expiresAt.toMillis(),
+      expiration_date_in_millis: expiresAt.toMillis(),
     };
   }
 
@@ -282,7 +282,8 @@ export class AuthService {
 
     const expiresAt = DateTime.fromJSDate(accountRecoveryToken.expires_at);
     const now = DateTime.utc();
-    const isTokenExpired = now.diff(expiresAt, 'minutes').minutes >= 15;
+    const expirationTime = +process.env.ACCOUNT_RECOVERY_TOKEN_TTL_IN_MINUTES;
+    const isTokenExpired = now.diff(expiresAt, 'minutes').minutes >= expirationTime;
 
     if (isTokenExpired) {
       await this.prisma.accountRecoveryToken.delete({
