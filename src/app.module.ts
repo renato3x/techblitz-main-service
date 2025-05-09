@@ -18,7 +18,6 @@ import { JwtTokenModule } from './jwt-token/jwt-token.module';
 import { AppLoggerModule } from './app-logger/app-logger.module';
 import { EventEmitterModule } from './event-emitter/event-emitter.module';
 import { UsersModule } from './users/users.module';
-import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -37,7 +36,6 @@ import { ScheduleModule } from '@nestjs/schedule';
     StorageAuthModule,
     JwtTokenModule,
     UsersModule,
-    ScheduleModule.forRoot(),
   ],
   controllers: [AppController],
   providers: [
