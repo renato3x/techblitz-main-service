@@ -247,7 +247,8 @@ export class AuthService {
     if (existentToken) {
       const now = DateTime.now();
       const expiresAt = DateTime.fromJSDate(existentToken.expires_at);
-      const isTokenValid = now.diff(expiresAt, 'minutes').minutes < expirationTimeInMinutes;
+      const remainingMinutes = expiresAt.diff(now, 'minutes').minutes;
+      const isTokenValid = remainingMinutes > 0;
 
       if (isTokenValid) {
         throw new BadRequestException('A valid recovery token already exists');
