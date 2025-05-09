@@ -51,6 +51,8 @@ describe('/auth/forgot-password', () => {
       expect(response.status).toBe(201);
       expect(response.body).toBeDefined();
       expect(response.body.data.expiration_date_in_millis).toBeDefined();
+      expect(response.body.timestamp).toBeDefined();
+      expect(response.body.status_code).toBe(201);
 
       expect(prisma.accountRecoveryToken).toBeDefined();
 
@@ -61,6 +63,25 @@ describe('/auth/forgot-password', () => {
       expect(token).toBeDefined();
       expect(token!.token).toBeDefined();
       expect(new Date(token!.expires_at).getTime()).toBeGreaterThan(Date.now());
+    });
+
+    it('should not create a new recovery token if a valid one already exists', async () => {
+      const secondResponse = await request(app.getHttpServer())
+        .post('/auth/forgot-password')
+        .send({ email: user.email });
+
+      expect(secondResponse.status).toBe(400);
+      expect(secondResponse.body).toBeDefined();
+      expect(secondResponse.body.error).toBe('Bad Request');
+      expect(secondResponse.body.message).toBe('A valid recovery token already exists');
+      expect(secondResponse.body.timestamp).toBeDefined();
+      expect(secondResponse.body.status_code).toBe(400);
+
+      const totalUserTokens = await prisma.accountRecoveryToken.count({
+        where: { user_id: user.id },
+      });
+
+      expect(totalUserTokens).toBe(1);
     });
 
     it('should return an error if email is not registered', async () => {

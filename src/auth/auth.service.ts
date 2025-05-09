@@ -225,6 +225,7 @@ export class AuthService {
   }
 
   async createAccountRecoveryToken({ email }: CreateAccountRecoveryTokenDto) {
+    const expirationTimeInMinutes = +process.env.ACCOUNT_RECOVERY_TOKEN_TTL_IN_MINUTES;
     const user = await this.prisma.user.findFirst({
       where: { email },
       select: {
@@ -237,7 +238,26 @@ export class AuthService {
       throw new NotFoundException('User not found');
     }
 
-    const expirationTimeInMinutes = +process.env.ACCOUNT_RECOVERY_TOKEN_TTL_IN_MINUTES;
+    const existentToken = await this.prisma.accountRecoveryToken.findFirst({
+      where: {
+        user_id: user.id,
+      },
+    });
+
+    if (existentToken) {
+      const now = DateTime.now();
+      const expiresAt = DateTime.fromJSDate(existentToken.expires_at);
+      const isTokenValid = now.diff(expiresAt, 'minutes').minutes < expirationTimeInMinutes;
+
+      if (isTokenValid) {
+        throw new BadRequestException('A valid recovery token already exists');
+      }
+
+      await this.prisma.accountRecoveryToken.delete({
+        where: { id: existentToken.id },
+      });
+    }
+
     const expiresAt = DateTime.utc().plus({ minutes: expirationTimeInMinutes });
     const token = await this.prisma.accountRecoveryToken.create({
       data: {
@@ -282,8 +302,8 @@ export class AuthService {
 
     const expiresAt = DateTime.fromJSDate(accountRecoveryToken.expires_at);
     const now = DateTime.utc();
-    const expirationTime = +process.env.ACCOUNT_RECOVERY_TOKEN_TTL_IN_MINUTES;
-    const isTokenExpired = now.diff(expiresAt, 'minutes').minutes >= expirationTime;
+    const expirationTimeInMinutes = +process.env.ACCOUNT_RECOVERY_TOKEN_TTL_IN_MINUTES;
+    const isTokenExpired = now.diff(expiresAt, 'minutes').minutes >= expirationTimeInMinutes;
 
     if (isTokenExpired) {
       await this.prisma.accountRecoveryToken.delete({
