@@ -26,6 +26,7 @@ model User {
   created_at             DateTime              @default(now())
   updated_at             DateTime              @updatedAt
   account_recovery_token AccountRecoveryToken?
+  account_deletion_code AccountDeletionCode?
 
   @@map("users")
 }
@@ -39,4 +40,15 @@ model AccountRecoveryToken {
   created_at DateTime @default(now())
 
   @@map("account_recovery_tokens")
+}
+
+model AccountDeletionCode {
+  id         Int      @id @default(autoincrement())
+  code       String   @db.Char(5)
+  user_id    String   @unique
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  expires_at DateTime
+  created_at DateTime @default(now())
+
+  @@map("account_deletion_codes")
 }

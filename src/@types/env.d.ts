@@ -13,5 +13,6 @@ declare namespace NodeJS {
     AUTH_TOKEN_COOKIE_NAME: string;
     STORAGE_AUTH_TOKEN_COOKIE_NAME: string;
     ACCOUNT_RECOVERY_TOKEN_TTL_IN_MINUTES: string;
+    ACCOUNT_DELETION_CODE_TTL_IN_MINUTES: string;
   }
 }

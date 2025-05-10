@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   ForbiddenException,
+  Inject,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -17,10 +18,14 @@ import { ChangePasswordDto } from './dto/change-password.dto';
 import { CreateAccountRecoveryTokenDto } from './dto/create-account-recovery-token.dto';
 import { DateTime } from 'luxon';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { EventEmitter } from '@/event-emitter/interfaces/event-emitter.interface';
+import { EVENT_EMITTER_SERVICE } from '@/event-emitter/event-emitter.constants';
 
 @Injectable()
 export class AuthService {
   constructor(
+    @Inject(EVENT_EMITTER_SERVICE)
+    private readonly eventEmitter: EventEmitter,
     private readonly prisma: PrismaService,
     private readonly passwordService: PasswordService,
     private readonly jwtTokenService: JwtTokenService,
@@ -55,6 +60,7 @@ export class AuthService {
     };
 
     const { token, expiresIn } = this.jwtTokenService.create(payload, JwtTokenType.APP);
+    await this.eventEmitter.emit('user.registered', user);
 
     return { user, token, expiresIn };
   }
@@ -185,6 +191,12 @@ export class AuthService {
 
     const { token, expiresIn } = this.jwtTokenService.create(payload, JwtTokenType.APP);
 
+    await this.eventEmitter.emit('user.updated', {
+      email: updatedUser.email,
+      username: updatedUser.username,
+      updated_at: updatedUser.updated_at,
+    });
+
     return { user: updatedUser, token, expiresIn };
   }
 
@@ -209,7 +221,7 @@ export class AuthService {
       throw new ForbiddenException('New password must be different from current password');
     }
 
-    return await this.prisma.user.update({
+    const updatedUser = await this.prisma.user.update({
       where: {
         id: userId,
       },
@@ -222,6 +234,9 @@ export class AuthService {
         updated_at: true,
       },
     });
+
+    await this.eventEmitter.emit('user.password-updated', updatedUser);
+    return updatedUser;
   }
 
   async createAccountRecoveryToken({ email }: CreateAccountRecoveryTokenDto) {
@@ -276,10 +291,9 @@ export class AuthService {
       },
     });
 
-    return {
-      token,
-      expiration_date_in_millis: expiresAt.toMillis(),
-    };
+    await this.eventEmitter.emit('user.account-recovery', token);
+
+    return { expiration_date_in_millis: expiresAt.toMillis() };
   }
 
   async resetPassword({ token, password }: ResetPasswordDto) {
@@ -340,7 +354,44 @@ export class AuthService {
       }),
     ]);
 
-    return user;
+    await this.eventEmitter.emit('user.password-reset', user);
+  }
+
+  async createAccountDeletionCode(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const expirationTimeInMinutes = +process.env.ACCOUNT_DELETION_CODE_TTL_IN_MINUTES;
+    const expiresAt = DateTime.utc().plus({ minutes: expirationTimeInMinutes });
+    const code = await this.prisma.accountDeletionCode.create({
+      data: {
+        code: Math.floor(10000 + Math.random() * 90000).toString(),
+        user_id: user.id,
+        expires_at: expiresAt.toJSDate(),
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            username: true,
+            email: true,
+          },
+        },
+      },
+    });
+
+    await this.eventEmitter.emit('user.deletion-request', code);
+
+    return {
+      expiration_date_in_millis: expiresAt.toMillis(),
+    };
   }
 
   private createAvatarFallback(name: string) {

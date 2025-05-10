@@ -1,22 +1,7 @@
-import {
-  Body,
-  Controller,
-  HttpStatus,
-  Post,
-  HttpCode,
-  Inject,
-  Get,
-  Query,
-  Res,
-  UseGuards,
-  Req,
-  Patch,
-} from '@nestjs/common';
+import { Body, Controller, HttpStatus, Post, HttpCode, Get, Query, Res, UseGuards, Req, Patch } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
-import { EVENT_EMITTER_SERVICE } from '@/event-emitter/event-emitter.constants';
-import { EventEmitter } from '@/event-emitter/interfaces/event-emitter.interface';
 import { CheckUsernameEmailDto } from './dto/check-username-email.dto';
 import { Request, Response } from 'express';
 import { AuthGuard } from '@/common/guards/auth.guard';
@@ -27,17 +12,12 @@ import { ResetPasswordDto } from './dto/reset-password.dto';
 
 @Controller('auth')
 export class AuthController {
-  constructor(
-    private readonly authService: AuthService,
-    @Inject(EVENT_EMITTER_SERVICE)
-    private readonly eventEmitter: EventEmitter,
-  ) {}
+  constructor(private readonly authService: AuthService) {}
 
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
   async register(@Body() body: RegisterUserDto, @Res({ passthrough: true }) response: Response) {
     const { user, token, expiresIn } = await this.authService.register(body);
-    await this.eventEmitter.emit('user.registered', user);
 
     response.cookie(process.env.AUTH_TOKEN_COOKIE_NAME, token, {
       httpOnly: true,
@@ -103,12 +83,6 @@ export class AuthController {
       path: '/',
     });
 
-    await this.eventEmitter.emit('user.updated', {
-      email: user.email,
-      username: user.username,
-      updated_at: user.updated_at,
-    });
-
     return user;
   }
 
@@ -117,28 +91,34 @@ export class AuthController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async changePassword(@Req() request: Request, @Body() body: ChangePasswordDto) {
     const userId = request.userToken!.sub;
-    const user = await this.authService.changePassword(userId, body);
-    await this.eventEmitter.emit('user.password-updated', user);
+    await this.authService.changePassword(userId, body);
   }
 
   @Post('forgot-password')
   @HttpCode(HttpStatus.CREATED)
   async createAccountRecoveryToken(@Body() body: CreateAccountRecoveryTokenDto) {
-    const { token, expiration_date_in_millis } = await this.authService.createAccountRecoveryToken(body);
-    await this.eventEmitter.emit('user.account-recovery', token);
+    const { expiration_date_in_millis } = await this.authService.createAccountRecoveryToken(body);
     return { expiration_date_in_millis };
   }
 
   @Post('reset-password')
   @HttpCode(HttpStatus.NO_CONTENT)
   async resetPassword(@Body() body: ResetPasswordDto) {
-    const user = await this.authService.resetPassword(body);
-    await this.eventEmitter.emit('user.password-reset', user);
+    await this.authService.resetPassword(body);
   }
 
   @Get('check')
   @HttpCode(HttpStatus.OK)
   async checkUsernameOrEmail(@Query() query: CheckUsernameEmailDto) {
     return await this.authService.checkUsernameOrEmail(query);
+  }
+
+  @Post('account-deletion-request')
+  @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.CREATED)
+  async createAccountDeletionCode(@Req() request: Request) {
+    const userId = request.userToken!.sub;
+    const { expiration_date_in_millis } = await this.authService.createAccountDeletionCode(userId);
+    return { expiration_date_in_millis };
   }
 }
