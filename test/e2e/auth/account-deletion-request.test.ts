@@ -107,5 +107,22 @@ describe('/auth/request-account-deletion', () => {
       expect(code!.code).toBeDefined();
       expect(new Date(code!.expires_at).getTime()).toBeGreaterThan(Date.now());
     });
+
+    it('should not create a new deletion code if a valid one already exists', async () => {
+      const response = await request(app.getHttpServer())
+        .post('/auth/account-deletion-request')
+        .set('Cookie', `${process.env.AUTH_TOKEN_COOKIE_NAME}=${token}`)
+        .send();
+
+      expect(response.status).toBe(400);
+      expect(response.body).toBeDefined();
+      expect(response.body.error).toBeDefined();
+      expect(response.body.error).toBe('Bad Request');
+      expect(response.body.message).toBeDefined();
+      expect(response.body.message).toBe('A valid deletion code already exists');
+      expect(response.body.timestamp).toBeDefined();
+      expect(response.body.status_code).toBeDefined();
+      expect(response.body.status_code).toBe(400);
+    });
   });
 });

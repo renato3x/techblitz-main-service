@@ -20,6 +20,7 @@ import { DateTime } from 'luxon';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { EventEmitter } from '@/event-emitter/interfaces/event-emitter.interface';
 import { EVENT_EMITTER_SERVICE } from '@/event-emitter/event-emitter.constants';
+import { DeleteUserDto } from './dto/delete-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -368,6 +369,27 @@ export class AuthService {
       throw new NotFoundException('User not found');
     }
 
+    const existentCode = await this.prisma.accountDeletionCode.findFirst({
+      where: {
+        user_id: user.id,
+      },
+    });
+
+    if (existentCode) {
+      const now = DateTime.now();
+      const expiresAt = DateTime.fromJSDate(existentCode.expires_at);
+      const remainingMinutes = expiresAt.diff(now, 'minutes').minutes;
+      const isCodeValid = remainingMinutes > 0;
+
+      if (isCodeValid) {
+        throw new BadRequestException('A valid deletion code already exists');
+      }
+
+      await this.prisma.accountDeletionCode.delete({
+        where: { id: existentCode.id },
+      });
+    }
+
     const expirationTimeInMinutes = +process.env.ACCOUNT_DELETION_CODE_TTL_IN_MINUTES;
     const expiresAt = DateTime.utc().plus({ minutes: expirationTimeInMinutes });
     const code = await this.prisma.accountDeletionCode.create({
@@ -392,6 +414,53 @@ export class AuthService {
     return {
       expiration_date_in_millis: expiresAt.toMillis(),
     };
+  }
+
+  async deleteUser(userId: string, deleteUserDto: DeleteUserDto) {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const deletionCode = await this.prisma.accountDeletionCode.findFirst({
+      where: {
+        user_id: user.id,
+      },
+    });
+
+    if (!deletionCode) {
+      throw new NotFoundException('Invalid deletion code');
+    }
+
+    if (deleteUserDto.code !== deletionCode.code) {
+      throw new ForbiddenException('Invalid deletion code');
+    }
+
+    const expiresAt = DateTime.fromJSDate(deletionCode.expires_at);
+    const now = DateTime.utc();
+    const expirationTimeInMinutes = +process.env.ACCOUNT_DELETION_CODE_TTL_IN_MINUTES;
+    const isCodeExpired = now.diff(expiresAt, 'minutes').minutes >= expirationTimeInMinutes;
+
+    if (isCodeExpired) {
+      await this.prisma.accountDeletionCode.delete({
+        where: {
+          id: deletionCode.id,
+        },
+      });
+
+      throw new ForbiddenException('Code already expired');
+    }
+
+    await this.prisma.user.delete({
+      where: {
+        id: user.id,
+      },
+    });
   }
 
   generateAccountDeletionCode() {

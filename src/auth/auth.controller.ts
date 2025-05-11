@@ -1,4 +1,17 @@
-import { Body, Controller, HttpStatus, Post, HttpCode, Get, Query, Res, UseGuards, Req, Patch } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpStatus,
+  Post,
+  HttpCode,
+  Get,
+  Query,
+  Res,
+  UseGuards,
+  Req,
+  Patch,
+  Delete,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
@@ -9,6 +22,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { CreateAccountRecoveryTokenDto } from './dto/create-account-recovery-token.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { DeleteUserDto } from './dto/delete-user.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -84,6 +98,24 @@ export class AuthController {
     });
 
     return user;
+  }
+
+  @Delete('user')
+  @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async delete(@Req() request: Request, @Res({ passthrough: true }) response: Response, @Body() body: DeleteUserDto) {
+    const userId = request.userToken!.sub;
+
+    await this.authService.deleteUser(userId, body);
+    response.clearCookie(process.env.AUTH_TOKEN_COOKIE_NAME, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 0,
+      path: '/',
+    });
+
+    return;
   }
 
   @Post('change-password')
