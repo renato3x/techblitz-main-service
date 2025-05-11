@@ -372,7 +372,7 @@ export class AuthService {
     const expiresAt = DateTime.utc().plus({ minutes: expirationTimeInMinutes });
     const code = await this.prisma.accountDeletionCode.create({
       data: {
-        code: Math.floor(10000 + Math.random() * 90000).toString(),
+        code: this.generateAccountDeletionCode(),
         user_id: user.id,
         expires_at: expiresAt.toJSDate(),
       },
@@ -392,6 +392,10 @@ export class AuthService {
     return {
       expiration_date_in_millis: expiresAt.toMillis(),
     };
+  }
+
+  generateAccountDeletionCode() {
+    return Math.floor(10000 + Math.random() * 90000).toString();
   }
 
   private createAvatarFallback(name: string) {
